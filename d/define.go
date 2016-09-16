@@ -1,4 +1,4 @@
-package spec
+package d
 
 import (
 	"go/ast"

@@ -4,10 +4,16 @@ import (
 	"go/ast"
 	"go/token"
 
-	"github.com/bughou-go/spec/specs"
+	"github.com/bughou-go/spec/d"
 )
 
-func Check(specs.Dir) {
+type Config struct {
+	Dir, File, Row, Func uint
+}
+
+var DefaultConfig = Config{Dir: 20, File: 200, Row: 100, Func: 20}
+
+func Check(dir *d.Dir) {
 }
 
 func checkFileSize(f *ast.File, fs *token.FileSet) {

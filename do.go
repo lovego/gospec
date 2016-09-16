@@ -7,15 +7,9 @@ import (
 	"path"
 	//"os"
 
-	"github.com/bughou-go/spec/names"
-	"github.com/bughou-go/spec/sizes"
+	"github.com/bughou-go/spec/check"
+	"github.com/bughou-go/spec/d"
 )
-
-type Dir struct {
-	Path string
-	Fset *token.FileSet
-	Pkgs map[string]*ast.Package
-}
 
 func doDirRecursively(p string) {
 }
@@ -23,34 +17,36 @@ func doDirRecursively(p string) {
 func doDir(p string) {
 	var fset = token.NewFileSet()
 	pkgs, err := parser.ParseDir(fset, p, nil, parser.ParseComments)
-	checkDir(&Dir{Path: p, Fset: fset, Pkgs: pkgs})
+	if err != nil {
+		panic(err)
+	}
+	check.Check(&d.Dir{Path: p, Fset: fset, Pkgs: pkgs})
 }
 
 func doFiles(ps []string) {
 	var fset = token.NewFileSet()
 	pkgs := make(map[string]*ast.Package)
 	for _, p := range ps {
-		f := openFile(p, fset)
-		name = f.Name.Name
-		if pkg := pkgs[name]; pkg != nil {
-			pkg.Files[p] = f
+		if path.Ext(p) != `.go` {
 			continue
 		}
-		pkgs[name] = &ast.Package{
-			Name:  name,
-			Files: map[string]*ast.File{p: f},
+		f, err := parser.ParseFile(fset, p, nil, parser.ParseComments)
+		if err != nil {
+			panic(err)
 		}
+		setupPkgs(p, f, pkgs)
 	}
-	checkDir(&Dir{Fset: fset, Pkgs: pkgs})
+	check.Check(&d.Dir{Fset: fset, Pkgs: pkgs})
 }
 
-func openFile(p string, fset *token.FileSet) *ast.File {
-	if path.Ext(p) != `.go` {
+func setupPkgs(p string, f *ast.File, pkgs map[string]*ast.Package) {
+	name := f.Name.Name
+	if pkg := pkgs[name]; pkg != nil {
+		pkg.Files[p] = f
 		return
 	}
-	f, err := parser.ParseFile(fset, p, nil, parser.ParseComments)
-	if err != nil {
-		panic(err)
+	pkgs[name] = &ast.Package{
+		Name:  name,
+		Files: map[string]*ast.File{p: f},
 	}
-	return f
 }
