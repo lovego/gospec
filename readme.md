@@ -1,12 +1,12 @@
 # spec
-golang source code style check.
+golang source coding spec check.
 
 ## rules 
 
 ##### size check
-1. package max files count check.
+1. dir max files count check.
 2. file max lines check.
-3. max row check.
+3. row max length check.
 4. function max lines check.
 
 

@@ -1,0 +1,4 @@
+package spec
+
+func main() {
+}
