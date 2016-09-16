@@ -7,11 +7,11 @@ import (
 	"github.com/bughou-go/spec/d"
 )
 
-type Config struct {
+type TConfig struct {
 	Dir, File, Row, Func uint
 }
 
-var DefaultConfig = Config{Dir: 20, File: 200, Row: 100, Func: 20}
+var Config = TConfig{Dir: 20, File: 200, Row: 100, Func: 20}
 
 func Check(dir *d.Dir) {
 }
