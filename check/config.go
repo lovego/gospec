@@ -2,7 +2,6 @@ package check
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -39,7 +38,6 @@ func parseConfigContent(content []byte) {
 	if err := json.Unmarshal(content, config); err != nil {
 		panic(err)
 	}
-	fmt.Println(config)
 }
 
 func configFilePath() string {
