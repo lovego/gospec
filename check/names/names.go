@@ -4,7 +4,7 @@ import (
 	"go/ast"
 	"go/token"
 
-	"github.com/bughou-go/spec/d"
+	"github.com/bughou-go/spec/c"
 )
 
 type TConfig struct {
@@ -26,7 +26,7 @@ var Config = TConfig{
 	LocalVar:   tConfig{Style: `camel`, MaxLen: 10},
 }
 
-func Check(dir *d.Dir) {
+func Check(dir *c.Dir) {
 }
 
 func doFileNode(f *ast.File, fs *token.FileSet) {

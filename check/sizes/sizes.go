@@ -4,7 +4,7 @@ import (
 	"go/ast"
 	"go/token"
 
-	"github.com/bughou-go/spec/d"
+	"github.com/bughou-go/spec/c"
 )
 
 type TConfig struct {
@@ -13,8 +13,12 @@ type TConfig struct {
 
 var Config = TConfig{Dir: 20, File: 200, Row: 100, Func: 20}
 
-func Check(dir *d.Dir) {
+func Check(dir *c.Dir) {
+	for _, pkg := range dir.Pkgs {
+		for _, f := range pkg.Files {
+		}
+	}
 }
 
-func checkFileSize(f *ast.File, fs *token.FileSet) {
+func checkFileSize(dir *c.Dir) {
 }

@@ -8,7 +8,7 @@
     "const":      { "style": "camel", "maxLen": 20 },
     "var":        { "style": "camel", "maxLen": 20 },
     "localConst": { "style": "camel", "maxLen": 10 },
-    "localVar":   { "style": "camel", "maxLen": 10 },
+    "localVar":   { "style": "camel", "maxLen": 10 }
   },
   "sizes": {
     "dir": 20, "file": 200, "row": 100, "func": 20

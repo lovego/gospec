@@ -1,8 +1,9 @@
-package d
+package c
 
 import (
 	"go/ast"
 	"go/token"
+	"os"
 )
 
 type Dir struct {
@@ -18,4 +19,17 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 		return w
 	}
 	return nil
+}
+
+var problemsLimit, problems uint = 10, 0
+
+func Problem() {
+	problems++
+	if problemsLimit > 0 && problems > problemsLimit {
+		os.Exit(1)
+	}
+}
+
+func Problems() uint {
+	return problems
 }

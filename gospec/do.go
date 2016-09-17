@@ -7,8 +7,8 @@ import (
 	"path"
 	//"os"
 
+	"github.com/bughou-go/spec/c"
 	"github.com/bughou-go/spec/check"
-	"github.com/bughou-go/spec/d"
 )
 
 func traverseDir(p string) {
@@ -20,7 +20,7 @@ func doDir(p string) {
 	if err != nil {
 		panic(err)
 	}
-	check.Check(&d.Dir{Path: p, Fset: fset, Pkgs: pkgs})
+	check.Check(&c.Dir{Path: p, Fset: fset, Pkgs: pkgs})
 }
 
 func doFiles(ps []string) {
@@ -36,7 +36,7 @@ func doFiles(ps []string) {
 		}
 		setupPkgs(p, f, pkgs)
 	}
-	check.Check(&d.Dir{Fset: fset, Pkgs: pkgs})
+	check.Check(&c.Dir{Fset: fset, Pkgs: pkgs})
 }
 
 func setupPkgs(p string, f *ast.File, pkgs map[string]*ast.Package) {
