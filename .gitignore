@@ -2,3 +2,4 @@
 *.test
 /release
 tmp
+/spec

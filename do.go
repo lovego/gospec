@@ -11,7 +11,7 @@ import (
 	"github.com/bughou-go/spec/d"
 )
 
-func doDirRecursively(p string) {
+func traverseDir(p string) {
 }
 
 func doDir(p string) {
