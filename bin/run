@@ -1,0 +1,11 @@
+#!/bin/bash
+cd $(dirname $0)/..
+
+GOBIN=$(pwd)/bin go install ./gospec || exit 1 #-gcflags "-N -l" 
+
+if [[ $1 = debug ]]; then
+  dlv exec bin/gospec "${@:1}"
+else 
+  bin/gospec "${@:1}"
+fi
+

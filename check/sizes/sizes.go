@@ -52,23 +52,41 @@ func checkLineSize(file *token.File) {
 	}
 	pos := file.Base()
 	end := file.Base() + file.Size()
-	lastLine := 1
+	curLine := 1
 	for pos <= end {
-		var line int
-		line, pos = forwardAMaxLine(file, pos)
-		if line == lastLine {
-			c.Problem(token.Position{Filename: file.Name(), Line: line}, descs.Line, `sizes.line`)
+		// move forward maxLine + 1, if it stay on the same line, then it's too long
+		pos += Config.Line + 1
+		if pos > end {
+			break
 		}
-		lastLine = line
+		position := file.Position(token.Pos(pos))
+		if position.Line == curLine {
+			c.Problem(token.Position{Filename: file.Name(), Line: curLine}, descs.Line, `sizes.line`)
+			pos, curLine = forward2NewLine(file, pos)
+		} else {
+			pos -= position.Column - 1 // move backward to first column
+			curLine = position.Line
+		}
 	}
 }
 
-// move forward a max line
-func forwardAMaxLine(file *token.File, pos int) (int, int) {
-	pos += Config.Line + 1 // Config.Line doesn't contain newline, so plus 1.
+func forward2NewLine(file *token.File, pos int) (int, int) {
+	end := file.Base() + file.Size()
+	if pos > end {
+		return pos, -1
+	}
 	position := file.Position(token.Pos(pos))
-	pos -= position.Column - 1 // move to first colunn
-	return position.Line, pos
+	line := position.Line
+	for curLine := line; line == curLine; line = position.Line {
+		// it's safe to forward maxLine + 2. it won't skip lines that's too long.
+		pos += Config.Line + 2
+		if pos > end {
+			return pos, -1
+		}
+		position = file.Position(token.Pos(pos))
+	}
+	pos -= position.Column - 1 // move backward to first column
+	return pos, line
 }
 
 func checkFuncSize(f *ast.File, fset *token.FileSet) {

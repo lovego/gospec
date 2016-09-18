@@ -11,6 +11,6 @@
     "localVar":   { "style": "camel", "maxLen": 10 }
   },
   "sizes": {
-    "dir": 20, "file": 200, "row": 100, "func": 20
+    "dir": 20, "file": 200, "line": 100, "func": 20
   }
 }
