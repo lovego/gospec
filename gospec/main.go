@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path"
 )
 
 func main() {
@@ -35,7 +36,9 @@ func processArgs() (traverseDirs, dirs, files []string) {
 				dirs = append(dirs, p)
 			}
 		case mode.IsRegular():
-			files = append(files, p)
+			if path.Ext(p) == `.go` {
+				files = append(files, p)
+			}
 		}
 	}
 	return

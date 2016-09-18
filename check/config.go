@@ -12,6 +12,7 @@ import (
 
 func init() {
 	parseConfig()
+	sizes.Setup()
 }
 
 // parse config from file

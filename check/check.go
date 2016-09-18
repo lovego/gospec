@@ -12,7 +12,7 @@ func Check(dir *c.Dir) {
 	sizes.Check(dir)
 	names.Check(dir)
 
-	if c.Problems() > 0 {
+	if c.ProblemsCount() > 0 {
 		os.Exit(1)
 	}
 }

@@ -1,6 +1,7 @@
 package c
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"os"
@@ -21,15 +22,17 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 	return nil
 }
 
-var problemsLimit, problems uint = 10, 0
+var problemsLimit, problemsCount uint = 10, 0
 
-func Problem() {
-	problems++
-	if problemsLimit > 0 && problems > problemsLimit {
+func Problem(pos token.Position, desc, rule string) {
+	fmt.Printf("%s: %s (%s)\n", pos, desc, rule)
+
+	problemsCount++
+	if problemsLimit > 0 && problemsCount > problemsLimit {
 		os.Exit(1)
 	}
 }
 
-func Problems() uint {
-	return problems
+func ProblemsCount() uint {
+	return problemsCount
 }

@@ -4,7 +4,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"path"
 	//"os"
 
 	"github.com/bughou-go/spec/c"
@@ -27,9 +26,6 @@ func doFiles(ps []string) {
 	var fset = token.NewFileSet()
 	pkgs := make(map[string]*ast.Package)
 	for _, p := range ps {
-		if path.Ext(p) != `.go` {
-			continue
-		}
 		f, err := parser.ParseFile(fset, p, nil, parser.ParseComments)
 		if err != nil {
 			panic(err)
