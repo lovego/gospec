@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"os"
+	"strconv"
 )
 
 type Dir struct {
@@ -13,9 +14,9 @@ type Dir struct {
 	Pkgs map[string]*ast.Package
 }
 
-type walker func(ast.Node) bool
+type Walker func(ast.Node) bool
 
-func (w walker) Visit(node ast.Node) ast.Visitor {
+func (w Walker) Visit(node ast.Node) ast.Visitor {
 	if w(node) {
 		return w
 	}
@@ -24,8 +25,15 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 
 var problemsLimit, problemsCount uint = 10, 0
 
-func Problem(pos token.Position, desc, rule string) {
-	fmt.Printf("%s: %s (%s)\n", pos, desc, rule)
+func Problem(position token.Position, ident string, rule [2]string) {
+	pos := position.Filename
+	if position.Line > 0 {
+		pos += `:` + strconv.Itoa(position.Line)
+		if position.Column > 0 {
+			pos += `:` + strconv.Itoa(position.Column)
+		}
+	}
+	fmt.Printf("%s:%s \t%s (%s)\n", pos, ident, rule[1], rule[0])
 
 	problemsCount++
 	if problemsLimit > 0 && problemsCount > problemsLimit {

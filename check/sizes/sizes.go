@@ -15,7 +15,13 @@ func Check(dir *c.Dir) {
 			file := dir.Fset.File(f.Package)
 			checkFileSize(file)
 			checkLineSize(file)
-			checkFuncSize(f, dir.Fset)
+			ast.Walk(c.Walker(func(n ast.Node) bool {
+				switch node := n.(type) {
+				case *ast.FuncDecl, *ast.FuncLit:
+					checkFuncSize(node, file)
+				}
+				return true
+			}), f)
 		}
 	}
 }
@@ -33,7 +39,7 @@ func checkDirSize(dir string) {
 		panic(err)
 	}
 	if len(names) > Config.Dir {
-		c.Problem(token.Position{Filename: dir}, descs.Dir, `sizes.dir`)
+		c.Problem(token.Position{Filename: dir}, ``, rules.Dir)
 	}
 }
 
@@ -42,7 +48,7 @@ func checkFileSize(file *token.File) {
 		return
 	}
 	if file.LineCount() > Config.File {
-		c.Problem(token.Position{Filename: file.Name()}, descs.File, `sizes.file`)
+		c.Problem(token.Position{Filename: file.Name()}, ``, rules.File)
 	}
 }
 
@@ -61,7 +67,7 @@ func checkLineSize(file *token.File) {
 		}
 		position := file.Position(token.Pos(pos))
 		if position.Line == curLine {
-			c.Problem(token.Position{Filename: file.Name(), Line: curLine}, descs.Line, `sizes.line`)
+			c.Problem(token.Position{Filename: file.Name(), Line: curLine}, ``, rules.Line)
 			pos, curLine = forward2NewLine(file, pos)
 		} else {
 			pos -= position.Column - 1 // move backward to first column
@@ -89,5 +95,17 @@ func forward2NewLine(file *token.File, pos int) (int, int) {
 	return pos, line
 }
 
-func checkFuncSize(f *ast.File, fset *token.FileSet) {
+func checkFuncSize(funct ast.Node, file *token.File) {
+	if Config.Func <= 0 {
+		return
+	}
+	position := file.Position(funct.Pos())
+	if file.Position(funct.End()).Line-position.Line > Config.Func {
+		switch fun := funct.(type) {
+		case *ast.FuncDecl:
+			c.Problem(position, fun.Name.Name, rules.Func)
+		default:
+			c.Problem(position, ``, rules.Func)
+		}
+	}
 }

@@ -4,35 +4,61 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	//"os"
+	"os"
+	"path"
 
 	"github.com/bughou-go/spec/c"
 	"github.com/bughou-go/spec/check"
 )
 
 func traverseDir(p string) {
-}
-
-func doDir(p string) {
-	var fset = token.NewFileSet()
-	pkgs, err := parser.ParseDir(fset, p, nil, parser.ParseComments)
+	f, err := os.Open(p)
 	if err != nil {
 		panic(err)
 	}
-	check.Check(&c.Dir{Path: p, Fset: fset, Pkgs: pkgs})
+	list, err := f.Readdir(-1)
+	if err != nil {
+		panic(err)
+	}
+	for _, d := range list {
+		if d.IsDir() {
+			traverseDir(path.Join(p, d.Name()))
+		}
+	}
+	doDir(p)
 }
 
-func doFiles(ps []string) {
+func doDir(dir string) {
+	var fset = token.NewFileSet()
+	pkgs, err := parser.ParseDir(fset, dir, nil, parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	check.Check(&c.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
+}
+
+func doFiles(paths []string) {
+	dirs := make(map[string][]string)
+	for _, p := range paths {
+		dir := path.Dir(p)
+		dirs[dir] = append(dirs[dir], p)
+	}
+	for dir, files := range dirs {
+		doDirFiles(dir, files)
+	}
+}
+
+func doDirFiles(dir string, files []string) {
 	var fset = token.NewFileSet()
 	pkgs := make(map[string]*ast.Package)
-	for _, p := range ps {
+	for _, p := range files {
 		f, err := parser.ParseFile(fset, p, nil, parser.ParseComments)
 		if err != nil {
 			panic(err)
 		}
 		setupPkgs(p, f, pkgs)
 	}
-	check.Check(&c.Dir{Fset: fset, Pkgs: pkgs})
+	check.Check(&c.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
 }
 
 func setupPkgs(p string, f *ast.File, pkgs map[string]*ast.Package) {

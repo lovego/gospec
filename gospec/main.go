@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 	"path"
+
+	"github.com/bughou-go/spec/c"
 )
 
 func main() {
@@ -15,6 +17,10 @@ func main() {
 	}
 	if len(files) > 0 {
 		doFiles(files)
+	}
+
+	if c.ProblemsCount() > 0 {
+		os.Exit(1)
 	}
 }
 

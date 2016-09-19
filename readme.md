@@ -1,5 +1,5 @@
 # spec
-golang source coding spec check.
+golang coding spec check.
 
 ## rules 
 
