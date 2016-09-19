@@ -2,26 +2,10 @@ package c
 
 import (
 	"fmt"
-	"go/ast"
 	"go/token"
 	"os"
 	"strconv"
 )
-
-type Dir struct {
-	Path string
-	Fset *token.FileSet
-	Pkgs map[string]*ast.Package
-}
-
-type Walker func(ast.Node) bool
-
-func (w Walker) Visit(node ast.Node) ast.Visitor {
-	if w(node) {
-		return w
-	}
-	return nil
-}
 
 var problemsLimit, problemsCount uint = 10, 0
 

@@ -8,25 +8,7 @@ import (
 	"github.com/bughou-go/spec/c"
 )
 
-func Check(dir *c.Dir) {
-	checkDirSize(dir.Path)
-	for _, pkg := range dir.Pkgs {
-		for _, f := range pkg.Files {
-			file := dir.Fset.File(f.Package)
-			checkFileSize(file)
-			checkLineSize(file)
-			ast.Walk(c.Walker(func(n ast.Node) bool {
-				switch node := n.(type) {
-				case *ast.FuncDecl, *ast.FuncLit:
-					checkFuncSize(node, file)
-				}
-				return true
-			}), f)
-		}
-	}
-}
-
-func checkDirSize(dir string) {
+func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
 		return
 	}
@@ -43,7 +25,7 @@ func checkDirSize(dir string) {
 	}
 }
 
-func checkFileSize(file *token.File) {
+func CheckFile(file *token.File) {
 	if Config.File <= 0 {
 		return
 	}
@@ -52,7 +34,7 @@ func checkFileSize(file *token.File) {
 	}
 }
 
-func checkLineSize(file *token.File) {
+func CheckLines(file *token.File) {
 	if Config.Line <= 0 {
 		return
 	}
@@ -95,7 +77,7 @@ func forward2NewLine(file *token.File, pos int) (int, int) {
 	return pos, line
 }
 
-func checkFuncSize(funct ast.Node, file *token.File) {
+func CheckFunc(funct ast.Node, file *token.File) {
 	if Config.Func <= 0 {
 		return
 	}

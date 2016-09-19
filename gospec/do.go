@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/bughou-go/spec/c"
 	"github.com/bughou-go/spec/check"
 )
 
@@ -34,7 +33,7 @@ func doDir(dir string) {
 	if err != nil {
 		panic(err)
 	}
-	check.Check(&c.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
+	check.Check(&check.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
 }
 
 func doFiles(paths []string) {
@@ -58,7 +57,7 @@ func doDirFiles(dir string, files []string) {
 		}
 		setupPkgs(p, f, pkgs)
 	}
-	check.Check(&c.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
+	check.Check(&check.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
 }
 
 func setupPkgs(p string, f *ast.File, pkgs map[string]*ast.Package) {
