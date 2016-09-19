@@ -21,7 +21,7 @@ func traverseDir(p string) {
 		panic(err)
 	}
 	for _, d := range list {
-		if d.IsDir() {
+		if d.IsDir() && d.Name()[0] != '.' {
 			traverseDir(path.Join(p, d.Name()))
 		}
 	}
