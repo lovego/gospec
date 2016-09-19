@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/bughou-go/spec/c"
+	"github.com/bughou-go/spec/problems"
 )
 
 func main() {
@@ -19,7 +19,8 @@ func main() {
 		doFiles(files)
 	}
 
-	if c.ProblemsCount() > 0 {
+	if problems.Count() > 0 {
+		problems.Render()
 		os.Exit(1)
 	}
 }
@@ -37,13 +38,13 @@ func processArgs() (traverseDirs, dirs, files []string) {
 		switch {
 		case mode.IsDir():
 			if p[len(p)-1] == '/' {
-				traverseDirs = append(traverseDirs, p)
+				traverseDirs = append(traverseDirs, path.Clean(p))
 			} else {
-				dirs = append(dirs, p)
+				dirs = append(dirs, path.Clean(p))
 			}
 		case mode.IsRegular():
 			if path.Ext(p) == `.go` {
-				files = append(files, p)
+				files = append(files, path.Clean(p))
 			}
 		}
 	}

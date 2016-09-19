@@ -12,7 +12,6 @@ import (
 
 func init() {
 	parseConfig()
-	sizes.Setup()
 }
 
 // parse config from file
@@ -30,8 +29,8 @@ func parseConfig() {
 
 func parseConfigContent(content []byte) {
 	var config = &struct {
-		Sizes *sizes.TConfig
-		Names *names.TConfig
+		Sizes *sizes.ConfigT
+		Names *names.ConfigT
 	}{
 		Sizes: &sizes.Config,
 		Names: &names.Config,

@@ -1,12 +1,20 @@
 package sizes
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"os"
+	"path"
 
-	"github.com/bughou-go/spec/c"
+	"github.com/bughou-go/spec/problems"
 )
+
+type ConfigT struct {
+	Dir, File, Line, Func int
+}
+
+var Config = ConfigT{Dir: 20, File: 200, Line: 100, Func: 20}
 
 func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
@@ -21,7 +29,11 @@ func CheckDir(dir string) {
 		panic(err)
 	}
 	if len(names) > Config.Dir {
-		c.Problem(token.Position{Filename: dir}, ``, rules.Dir)
+		problems.Add(
+			token.Position{Filename: dir},
+			fmt.Sprintf(`dir %s shouldn't be more than %d items`, path.Base(dir), Config.Dir),
+			`sizes.dir`,
+		)
 	}
 }
 
@@ -30,7 +42,11 @@ func CheckFile(file *token.File) {
 		return
 	}
 	if file.LineCount() > Config.File {
-		c.Problem(token.Position{Filename: file.Name()}, ``, rules.File)
+		problems.Add(
+			token.Position{Filename: file.Name()},
+			fmt.Sprintf(`file %s shouldn't be more than %d lines`, path.Base(file.Name()), Config.File),
+			`sizes.file`,
+		)
 	}
 }
 
@@ -49,7 +65,11 @@ func CheckLines(file *token.File) {
 		}
 		position := file.Position(token.Pos(pos))
 		if position.Line == curLine {
-			c.Problem(token.Position{Filename: file.Name(), Line: curLine}, ``, rules.Line)
+			problems.Add(
+				token.Position{Filename: file.Name(), Line: curLine},
+				fmt.Sprintf(`line %d shouldn't be more than %d chars`, curLine, Config.Line),
+				`sizes.line`,
+			)
 			pos, curLine = forward2NewLine(file, pos)
 		} else {
 			pos -= position.Column - 1 // move backward to first column
@@ -82,12 +102,15 @@ func CheckFunc(funct ast.Node, file *token.File) {
 		return
 	}
 	position := file.Position(funct.Pos())
-	if file.Position(funct.End()).Line-position.Line > Config.Func {
-		switch fun := funct.(type) {
-		case *ast.FuncDecl:
-			c.Problem(position, fun.Name.Name, rules.Func)
-		default:
-			c.Problem(position, ``, rules.Func)
-		}
+	if file.Position(funct.End()).Line-position.Line <= Config.Func {
+		return
 	}
+	var name string
+	if fun, ok := funct.(*ast.FuncDecl); ok {
+		name = fun.Name.Name
+	}
+	problems.Add(position,
+		fmt.Sprintf(`func %s shouldn't be more than %d lines`, name, Config.Func),
+		`sizes.func`,
+	)
 }
