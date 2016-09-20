@@ -1,6 +1,7 @@
 package sizes
 
 import (
+	"bufio"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -8,6 +9,7 @@ import (
 	"path"
 
 	"github.com/bughou-go/spec/problems"
+	"github.com/mattn/go-runewidth"
 )
 
 type ConfigT struct {
@@ -20,19 +22,11 @@ func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
 		return
 	}
-	f, err := os.Open(dir)
-	if err != nil {
-		panic(err)
-	}
-	names, err := f.Readdirnames(-1)
-	if err != nil {
-		panic(err)
-	}
-	if len(names) > Config.Dir {
+	if count := entriesCount(dir); count > Config.Dir {
 		problems.Add(
-			token.Position{Filename: dir},
-			fmt.Sprintf(`dir %s shouldn't be more than %d items`, path.Base(dir), Config.Dir),
-			`sizes.dir`,
+			token.Position{Filename: dir}, fmt.Sprintf(
+				`dir %s has %d entries, limit %d`, path.Base(dir), count, Config.Dir,
+			), `sizes.dir`,
 		)
 	}
 }
@@ -41,53 +35,27 @@ func CheckFile(file *token.File) {
 	if Config.File <= 0 {
 		return
 	}
-	if file.LineCount() > Config.File {
+	if lines := file.LineCount(); lines > Config.File {
 		problems.Add(
-			token.Position{Filename: file.Name()},
-			fmt.Sprintf(`file %s shouldn't be more than %d lines`, path.Base(file.Name()), Config.File),
-			`sizes.file`,
+			token.Position{Filename: file.Name()}, fmt.Sprintf(
+				`file %s has %d lines, limit %d`, path.Base(file.Name()), lines, Config.File,
+			), `sizes.file`,
 		)
 	}
 }
 
-func CheckLines(file *token.File) {
+func CheckLines(p string) {
 	if Config.Line <= 0 {
 		return
 	}
-	for curLine, pos, end := 1, file.Base(), file.Base()+file.Size(); pos <= end; {
-		// move forward maxLine + 1, if it stay on the same line, then it's too long
-		if pos += Config.Line + 1; pos > end {
-			break
-		}
-		if position := file.Position(token.Pos(pos)); position.Line == curLine {
-			problems.Add(token.Position{Filename: file.Name(), Line: curLine},
-				fmt.Sprintf(`line %d shouldn't be more than %d chars`, curLine, Config.Line), `sizes.line`,
+	lines := readLines(p)
+	for i, line := range lines {
+		if width := runewidth.StringWidth(line); width > Config.Line {
+			problems.Add(token.Position{Filename: p, Line: i}, fmt.Sprintf(
+				`line %d width %d, limit %d`, i, width, Config.Line), `sizes.line`,
 			)
-			pos, curLine = forward2NewLine(file, pos)
-		} else {
-			pos -= position.Column - 1 // move backward to first column
-			curLine = position.Line
 		}
 	}
-}
-
-func forward2NewLine(file *token.File, pos int) (int, int) {
-	end := file.Base() + file.Size()
-	if pos > end {
-		return pos, -1
-	}
-	position := file.Position(token.Pos(pos))
-	line := position.Line
-	for curLine := line; line == curLine; line = position.Line {
-		// it's safe to forward maxLine + 2. it won't skip lines that's too long.
-		pos += Config.Line + 2
-		if pos > end {
-			return pos, -1
-		}
-		position = file.Position(token.Pos(pos))
-	}
-	pos -= position.Column - 1 // move backward to first column
-	return pos, line
 }
 
 func CheckFunc(funct ast.Node, file *token.File) {
@@ -95,7 +63,8 @@ func CheckFunc(funct ast.Node, file *token.File) {
 		return
 	}
 	position := file.Position(funct.Pos())
-	if file.Position(funct.End()).Line-position.Line <= Config.Func {
+	lines := file.Position(funct.End()).Line - position.Line
+	if lines <= Config.Func {
 		return
 	}
 	var name string
@@ -103,7 +72,38 @@ func CheckFunc(funct ast.Node, file *token.File) {
 		name = fun.Name.Name
 	}
 	problems.Add(position,
-		fmt.Sprintf(`func %s shouldn't be more than %d lines`, name, Config.Func),
-		`sizes.func`,
+		fmt.Sprintf(`func %s has %d lines(max: %d)`, name, lines, Config.Func), `sizes.func`,
 	)
+}
+
+func entriesCount(dir string) int {
+	f, err := os.Open(dir)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	if names, err := f.Readdirnames(-1); err != nil {
+		panic(err)
+	} else {
+		return len(names)
+	}
+}
+
+func readLines(path string) (lines []string) {
+	f, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	return
 }

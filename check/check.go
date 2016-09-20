@@ -28,7 +28,7 @@ func Check(dir *Dir) {
 			names.CheckFile(p)
 			sizes.CheckFile(file)
 
-			sizes.CheckLines(file)
+			sizes.CheckLines(file.Name())
 			ast.Walk(walker{file}, f)
 		}
 	}
