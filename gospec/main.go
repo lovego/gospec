@@ -38,12 +38,16 @@ func processArgs() (traverseDirs, dirs, files []string) {
 				dirs = append(dirs, path.Clean(p))
 			}
 		case mode.IsRegular():
-			if path.Ext(p) == `.go` {
+			if willBuild(p) {
 				files = append(files, path.Clean(p))
 			}
 		}
 	}
 	return
+}
+
+func willBuild(p string) bool {
+	return path.Ext(p) == `.go` && p[0] != '.' && p[0] != '_'
 }
 
 func fileMode(p string) os.FileMode {

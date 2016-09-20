@@ -28,12 +28,23 @@ func traverseDir(p string) {
 }
 
 func doDir(dir string) {
-	var fset = token.NewFileSet()
-	pkgs, err := parser.ParseDir(fset, dir, nil, parser.ParseComments)
+	f, err := os.Open(dir)
 	if err != nil {
 		panic(err)
 	}
-	check.Check(&check.Dir{Path: dir, Fset: fset, Pkgs: pkgs})
+	names, err := f.Readdirnames(-1)
+	if err != nil {
+		panic(err)
+	}
+	files := make([]string, 0, len(names))
+	for _, name := range names {
+		if willBuild(name) {
+			files = append(files, path.Join(dir, name))
+		}
+	}
+	if len(files) > 0 {
+		doDirFiles(dir, files)
+	}
 }
 
 func doFiles(paths []string) {
