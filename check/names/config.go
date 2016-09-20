@@ -15,13 +15,15 @@ type configT struct {
 }
 
 var Config = ConfigT{
-	Dir:   configT{Style: `lowercase`, MaxLen: 20},
-	File:  configT{Style: `lowercase`, MaxLen: 20},
-	Pkg:   configT{Style: `lowercase`, MaxLen: 20},
+	Dir:  configT{Style: `lowercase`, MaxLen: 20},
+	File: configT{Style: `lowercase`, MaxLen: 20},
+	Pkg:  configT{Style: `lowercase`, MaxLen: 20},
+
+	Type: configT{Style: `camelCase`, MaxLen: 20},
+	Func: configT{Style: `camelCase`, MaxLen: 20},
+
 	Const: configT{Style: `camelCase`, MaxLen: 20},
-	Type:  configT{Style: `camelCase`, MaxLen: 20},
 	Var:   configT{Style: `camelCase`, MaxLen: 20},
-	Func:  configT{Style: `camelCase`, MaxLen: 20},
 	Label: configT{Style: `camelCase`, MaxLen: 20},
 	// LocalConst: configT{Style: `camelCase`, MaxLen: 10},
 	// LocalVar:   configT{Style: `camelCase`, MaxLen: 10},
