@@ -8,8 +8,10 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+const limit = 10
+
+var count uint = 0
 var table = newTable()
-var limit, count uint = 10, 0
 
 func Add(position token.Position, desc, rule string) {
 	table.Append([]string{positionString(position), desc, rule})

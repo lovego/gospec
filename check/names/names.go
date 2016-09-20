@@ -29,7 +29,8 @@ func CheckPkg(pkg *ast.Package, fset *token.FileSet) {
 			f = file
 			break
 		}
-		problems.Add(fset.Position(f.Name.Pos()), fmt.Sprintf(`package %s %s`, pkg.Name, desc), `names.pkg`)
+		problems.Add(fset.Position(f.Name.Pos()),
+			fmt.Sprintf(`package %s %s`, pkg.Name, desc), `names.pkg`)
 	}
 }
 

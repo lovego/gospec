@@ -4,10 +4,11 @@
     "pkg":        { "style": "lowercase", "maxLen": 20 },
     "file":       { "style": "lowercase", "maxLen": 20 },
 
-    "const":      { "style": "camelCase", "maxLen": 20 },
     "type":       { "style": "camelCase", "maxLen": 20 },
-    "var":        { "style": "camelCase", "maxLen": 20 },
     "func":       { "style": "camelCase", "maxLen": 20 },
+
+    "const":      { "style": "camelCase", "maxLen": 20 },
+    "var":        { "style": "camelCase", "maxLen": 20 },
     "label":      { "style": "camelCase", "maxLen": 20 }
   },
   "sizes": {

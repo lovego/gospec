@@ -30,12 +30,7 @@ func processArgs() (traverseDirs, dirs, files []string) {
 		if i == 0 {
 			continue
 		}
-		finfo, err := os.Stat(p)
-		if err != nil {
-			panic(err)
-		}
-		mode := finfo.Mode()
-		switch {
+		switch mode := fileMode(p); {
 		case mode.IsDir():
 			if p[len(p)-1] == '/' {
 				traverseDirs = append(traverseDirs, path.Clean(p))
@@ -49,4 +44,12 @@ func processArgs() (traverseDirs, dirs, files []string) {
 		}
 	}
 	return
+}
+
+func fileMode(p string) os.FileMode {
+	if fi, err := os.Stat(p); err == nil {
+		return fi.Mode()
+	} else {
+		panic(err)
+	}
 }

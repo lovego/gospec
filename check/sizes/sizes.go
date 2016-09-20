@@ -54,21 +54,14 @@ func CheckLines(file *token.File) {
 	if Config.Line <= 0 {
 		return
 	}
-	pos := file.Base()
-	end := file.Base() + file.Size()
-	curLine := 1
-	for pos <= end {
+	for curLine, pos, end := 1, file.Base(), file.Base()+file.Size(); pos <= end; {
 		// move forward maxLine + 1, if it stay on the same line, then it's too long
-		pos += Config.Line + 1
-		if pos > end {
+		if pos += Config.Line + 1; pos > end {
 			break
 		}
-		position := file.Position(token.Pos(pos))
-		if position.Line == curLine {
-			problems.Add(
-				token.Position{Filename: file.Name(), Line: curLine},
-				fmt.Sprintf(`line %d shouldn't be more than %d chars`, curLine, Config.Line),
-				`sizes.line`,
+		if position := file.Position(token.Pos(pos)); position.Line == curLine {
+			problems.Add(token.Position{Filename: file.Name(), Line: curLine},
+				fmt.Sprintf(`line %d shouldn't be more than %d chars`, curLine, Config.Line), `sizes.line`,
 			)
 			pos, curLine = forward2NewLine(file, pos)
 		} else {
