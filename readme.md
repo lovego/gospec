@@ -27,9 +27,7 @@ a configurable golang coding spec checker.
 5. const, variable name check.
 
 ## Config File
-The config file "gospec.json" is looked up from working directory up to root. It use the first one it find.
-
-If none is found, it use the following default config:
+gospec find the config file named "gospec.json" from current working directory upwards. It use the first one it find. If none is found, it uses the following default config:
 ```
 {
   "names": {
