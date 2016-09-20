@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"regexp"
+	"strings"
 )
 
 type ConfigT struct {
@@ -52,18 +53,14 @@ func checkName(name string, config configT) string {
 	if name == `_` {
 		return ``
 	}
-	styleRight := checkStyle(config.Style, name)
-	sizeRight := len(name) <= config.MaxLen
-	switch {
-	case styleRight && sizeRight:
-		return ``
-	case !styleRight && sizeRight:
-		return fmt.Sprintf(`should be %s style`, config.Style)
-	case styleRight && !sizeRight:
-		return fmt.Sprintf(`shouldn't be more than %d chars`, config.MaxLen)
-	default:
-		return fmt.Sprintf(`should be %s style and not more than %d chars`, config.Style, config.MaxLen)
+	desc := []string{}
+	if !checkStyle(config.Style, name) {
+		desc = append(desc, fmt.Sprintf(`should be %s style`, config.Style))
 	}
+	if len(name) > config.MaxLen {
+		desc = append(desc, fmt.Sprintf(`%d chars long, limits %d`, len(name), config.MaxLen))
+	}
+	return strings.Join(desc, ` and `)
 }
 
 var lowercaseRegexp = regexp.MustCompile(`^(_?[a-z0-9]+)+$`)

@@ -25,7 +25,7 @@ func CheckDir(dir string) {
 	if count := entriesCount(dir); count > Config.Dir {
 		problems.Add(
 			token.Position{Filename: dir}, fmt.Sprintf(
-				`dir %s has %d entries, limit %d`, path.Base(dir), count, Config.Dir,
+				`dir %s has %d entries, limits %d`, path.Base(dir), count, Config.Dir,
 			), `sizes.dir`,
 		)
 	}
@@ -38,7 +38,7 @@ func CheckFile(file *token.File) {
 	if lines := file.LineCount(); lines > Config.File {
 		problems.Add(
 			token.Position{Filename: file.Name()}, fmt.Sprintf(
-				`file %s has %d lines, limit %d`, path.Base(file.Name()), lines, Config.File,
+				`file %s %d lines long, limits %d`, path.Base(file.Name()), lines, Config.File,
 			), `sizes.file`,
 		)
 	}
@@ -52,7 +52,7 @@ func CheckLines(p string) {
 	for i, line := range lines {
 		if width := runewidth.StringWidth(line); width > Config.Line {
 			problems.Add(token.Position{Filename: p, Line: i}, fmt.Sprintf(
-				`line %d width %d, limit %d`, i, width, Config.Line), `sizes.line`,
+				`line %d %d chars wide, limits %d`, i, width, Config.Line), `sizes.line`,
 			)
 		}
 	}
@@ -72,7 +72,7 @@ func CheckFunc(funct ast.Node, file *token.File) {
 		name = fun.Name.Name
 	}
 	problems.Add(position,
-		fmt.Sprintf(`func %s has %d lines(max: %d)`, name, lines, Config.Func), `sizes.func`,
+		fmt.Sprintf(`func %s %d lines long, limits %d`, name, lines, Config.Func), `sizes.func`,
 	)
 }
 

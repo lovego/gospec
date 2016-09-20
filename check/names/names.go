@@ -17,7 +17,7 @@ func CheckDir(p string) {
 	name := path.Base(p)
 	desc := checkName(name, Config.Dir)
 	if desc != `` {
-		problems.Add(token.Position{Filename: p}, fmt.Sprintf(`dir %s %s`, name, desc), `names.dir`)
+		problems.Add(token.Position{Filename: p}, fmt.Sprintf(`dir name %s %s`, name, desc), `names.dir`)
 	}
 }
 
@@ -30,7 +30,7 @@ func CheckPkg(pkg *ast.Package, fset *token.FileSet) {
 			break
 		}
 		problems.Add(fset.Position(f.Name.Pos()),
-			fmt.Sprintf(`package %s %s`, pkg.Name, desc), `names.pkg`)
+			fmt.Sprintf(`package name %s %s`, pkg.Name, desc), `names.pkg`)
 	}
 }
 
@@ -38,7 +38,7 @@ func CheckFile(p string) {
 	name := path.Base(p)
 	desc := checkName(strings.TrimSuffix(name, `.go`), Config.File)
 	if desc != `` {
-		problems.Add(token.Position{Filename: p}, fmt.Sprintf(`file %s %s`, name, desc), `names.file`)
+		problems.Add(token.Position{Filename: p}, fmt.Sprintf(`file name %s %s`, name, desc), `names.file`)
 	}
 }
 
@@ -120,7 +120,7 @@ func CheckIdent(ident *ast.Ident, file *token.File, thing string) {
 		thing = kind
 	}
 	problems.Add(file.Position(ident.Pos()),
-		fmt.Sprintf(`%s %s %s`, thing, ident.Name, desc), `names.`+kind,
+		fmt.Sprintf(`%s name %s %s`, thing, ident.Name, desc), `names.`+kind,
 	)
 }
 
