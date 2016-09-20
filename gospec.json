@@ -3,11 +3,12 @@
     "dir":        { "style": "lowercase", "maxLen": 20 },
     "pkg":        { "style": "lowercase", "maxLen": 20 },
     "file":       { "style": "lowercase", "maxLen": 20 },
-    "func":       { "style": "camelCase", "maxLen": 20 },
+
     "const":      { "style": "camelCase", "maxLen": 20 },
+    "type":       { "style": "camelCase", "maxLen": 20 },
     "var":        { "style": "camelCase", "maxLen": 20 },
-    "localConst": { "style": "camelCase", "maxLen": 10 },
-    "localVar":   { "style": "camelCase", "maxLen": 10 }
+    "func":       { "style": "camelCase", "maxLen": 20 },
+    "label":      { "style": "camelCase", "maxLen": 20 }
   },
   "sizes": {
     "dir": 20, "file": 200, "line": 100, "func": 20

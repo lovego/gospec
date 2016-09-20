@@ -12,7 +12,7 @@ import (
 )
 
 type ConfigT struct {
-	Dir, File, Pkg, Func, Const, Var, LocalConst, LocalVar configT
+	Dir, File, Pkg, Const, Type, Var, Func, Label configT
 }
 type configT struct {
 	Style  string
@@ -61,17 +61,83 @@ func CheckFile(p string) {
 	}
 }
 
-func CheckFunc(fun *ast.FuncDecl, file *token.File) {
-	desc := checkName(fun.Name.Name, Config.Func)
-	if desc != `` {
-		problems.Add(file.Position(fun.Pos()), fmt.Sprintf(`func %s %s`, fun.Name.Name, desc), `names.func`)
+func CheckFunc(n ast.Node, file *token.File) {
+	switch fun := n.(type) {
+	case *ast.FuncDecl:
+		CheckIdent(fun.Name, file)
+		checkFieldList(fun.Type.Recv, file, `func receiver`)
+		checkFieldList(fun.Type.Params, file, `func param`)
+		checkFieldList(fun.Type.Results, file, `func result`)
+	case *ast.FuncLit:
+		checkFieldList(fun.Type.Params, file, `func param`)
+		checkFieldList(fun.Type.Results, file, `func result`)
 	}
 }
 
-func CheckVar(n ast.Node, file *token.File) {
+func checkFieldList(fl *ast.FieldList, file *token.File, kind string) {
+	if fl == nil {
+		return
+	}
+	for _, f := range fl.List {
+		for _, ident := range f.Names {
+			desc := checkName(ident.Name, Config.Var)
+			if desc == `` {
+				continue
+			}
+			problems.Add(file.Position(ident.Pos()),
+				fmt.Sprintf(`%s %s %s`, kind, ident.Name, desc), `names.var`,
+			)
+		}
+	}
 }
 
-func CheckConst(n ast.Node, file *token.File) {
+func CheckShortVarDecl(as *ast.AssignStmt, file *token.File) {
+	if as.Tok != token.DEFINE {
+		return
+	}
+	for _, exp := range as.Lhs {
+		if ident, ok := exp.(*ast.Ident); ok {
+			names.CheckIdent(ident, file)
+		}
+	}
+}
+
+func CheckGenDecl(decl *ast.GenDecl, file *token.File) {
+	if decl.Tok == token.IMPORT {
+		return true
+	}
+	for _, spec := range v.Specs {
+		switch s := spec.(type) {
+		case *ast.TypeSpec:
+			CheckIdent(s.Name, file)
+		case *ast.ValueSpec:
+			for _, ident := range s.Names {
+				CheckIdent(ident, file)
+			}
+		}
+	}
+}
+
+func CheckIdent(ident *ast.Ident, file *token.File) {
+	var desc string
+	kind := ident.Obj.ObjKind
+	switch kind {
+	case ast.Con:
+		desc = checkName(ident.Name, Config.Const)
+	case ast.Typ:
+		desc = checkName(ident.Name, Config.Type)
+	case ast.Var:
+		desc = checkName(ident.Name, Config.Var)
+	case ast.Fun:
+		desc = checkName(ident.Name, Config.Func)
+	case ast.Label:
+		desc = checkName(ident.Name, Config.Label)
+	}
+	if desc != `` {
+		problems.Add(file.Position(ident.Pos()),
+			fmt.Sprintf(`%s %s %s`, kind, ident.Name, desc), `names.`+kind.String(),
+		)
+	}
 }
 
 func checkName(name string, config configT) string {
