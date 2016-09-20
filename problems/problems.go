@@ -17,7 +17,7 @@ func Add(position token.Position, desc, rule string) {
 	table.Append([]string{positionString(position), desc, rule})
 
 	count++
-	if limit > 0 && count > limit {
+	if limit > 0 && count >= limit {
 		table.Render()
 		os.Exit(1)
 	}

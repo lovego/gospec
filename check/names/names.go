@@ -38,7 +38,9 @@ func CheckFile(p string) {
 	name := path.Base(p)
 	desc := checkName(strings.TrimSuffix(name, `.go`), Config.File)
 	if desc != `` {
-		problems.Add(token.Position{Filename: p}, fmt.Sprintf(`file name %s %s`, name, desc), `names.file`)
+		problems.Add(token.Position{Filename: p},
+			fmt.Sprintf(`file name %s %s`, name, desc), `names.file`,
+		)
 	}
 }
 
