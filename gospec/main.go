@@ -26,10 +26,7 @@ func main() {
 }
 
 func processArgs() (traverseDirs, dirs, files []string) {
-	for i, p := range os.Args {
-		if i == 0 {
-			continue
-		}
+	for _, p := range os.Args[1:] {
 		switch mode := fileMode(p); {
 		case mode.IsDir():
 			if p[len(p)-1] == '/' {

@@ -1,12 +1,12 @@
 package sizes
 
 import (
-	"bufio"
 	"fmt"
 	"go/ast"
 	"go/token"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/bughou-go/spec/problems"
 	"github.com/mattn/go-runewidth"
@@ -22,34 +22,40 @@ func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
 		return
 	}
-	if count := entriesCount(dir); count > Config.Dir {
-		problems.Add(
-			token.Position{Filename: dir}, fmt.Sprintf(
-				`dir %s size: %d entries, limits %d`, path.Base(dir), count, Config.Dir,
-			), `sizes.dir`,
-		)
+	count := entriesCount(dir)
+	if count <= Config.Dir {
+		return
 	}
+	problems.Add(
+		token.Position{Filename: dir}, fmt.Sprintf(
+			`dir %s size: %d entries, limits %d`, path.Base(dir), count, Config.Dir,
+		), `sizes.dir`,
+	)
 }
 
-func CheckFile(file *token.File) {
+func CheckFile(f *ast.File, file *token.File, src []string) {
 	if Config.File <= 0 {
 		return
 	}
-	if lines := file.LineCount(); lines > Config.File {
-		problems.Add(
-			token.Position{Filename: file.Name()}, fmt.Sprintf(
-				`file %s size: %d lines, limits %d`, path.Base(file.Name()), lines, Config.File,
-			), `sizes.file`,
-		)
+	count := file.LineCount()
+	if count <= Config.File {
+		return
 	}
+	if count -= commentsLineCount(nil, f, file, src); count <= Config.File {
+		return
+	}
+	problems.Add(
+		token.Position{Filename: file.Name()}, fmt.Sprintf(
+			`file %s size: %d lines, limits %d`, path.Base(file.Name()), count, Config.File,
+		), `sizes.file`,
+	)
 }
 
-func CheckLines(p string) {
+func CheckLines(p string, src []string) {
 	if Config.Line <= 0 {
 		return
 	}
-	lines := readLines(p)
-	for i, line := range lines {
+	for i, line := range src {
 		if width := runewidth.StringWidth(line); width > Config.Line {
 			problems.Add(token.Position{Filename: p, Line: i + 1}, fmt.Sprintf(
 				`line %d size: %d chars wide, limits %d`, i+1, width, Config.Line), `sizes.line`,
@@ -58,21 +64,24 @@ func CheckLines(p string) {
 	}
 }
 
-func CheckFunc(funct ast.Node, file *token.File) {
+func CheckFunc(fun ast.Node, f *ast.File, file *token.File, src []string) {
 	if Config.Func <= 0 {
 		return
 	}
-	position := file.Position(funct.Pos())
-	lines := file.Position(funct.End()).Line - position.Line
-	if lines <= Config.Func {
+	position := file.Position(fun.Pos())
+	count := file.Line(fun.End()) - position.Line
+	if count <= Config.Func {
+		return
+	}
+	if count -= commentsLineCount(fun, f, file, src); count <= Config.Func {
 		return
 	}
 	var name string
-	if fun, ok := funct.(*ast.FuncDecl); ok {
-		name = fun.Name.Name
+	if funct, ok := fun.(*ast.FuncDecl); ok {
+		name = funct.Name.Name
 	}
 	problems.Add(position,
-		fmt.Sprintf(`func %s size: %d lines, limits %d`, name, lines, Config.Func), `sizes.func`,
+		fmt.Sprintf(`func %s size: %d lines, limits %d`, name, count, Config.Func), `sizes.func`,
 	)
 }
 
@@ -90,20 +99,25 @@ func entriesCount(dir string) int {
 	}
 }
 
-func readLines(path string) (lines []string) {
-	f, err := os.Open(path)
-	if err != nil {
-		panic(err)
+func commentsLineCount(context ast.Node, f *ast.File, file *token.File, src []string) (count int) {
+	for _, cg := range f.Comments {
+		if context != nil && (cg.Pos() < context.Pos() || cg.End() > context.End()) {
+			continue
+		}
+		start, end := file.Position(cg.Pos()), file.Position(cg.End())
+		// non blank prefix
+		if line := src[start.Line-1]; !isWhitespace(line[:start.Column-1]) {
+			start.Line += 1
+		}
+		// blank suffix
+		if line := src[end.Line-1]; isWhitespace(line[end.Column-1:]) {
+			end.Line += 1
+		}
+		count += end.Line - start.Line
 	}
-	defer f.Close()
+	return count
+}
 
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	return
+func isWhitespace(s string) bool {
+	return len(s) == 0 || len(strings.TrimSpace(s)) == 0
 }
