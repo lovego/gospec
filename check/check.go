@@ -31,41 +31,13 @@ func Check(dir string, files []string) {
 
 func checkFile(f *ast.File, file *token.File, i int, src []string) {
 	if i == 0 {
-		names.CheckIdent(f.Name, file, ``)
+		names.CheckIdent(f.Name, false, file, ``)
 	}
 	names.CheckFile(file.Name())
 	sizes.CheckFile(f, file, src)
 
 	sizes.CheckLines(file.Name(), src)
 	ast.Walk(walker{f, file, src}, f)
-}
-
-type walker struct {
-	f    *ast.File
-	file *token.File
-	src  []string
-}
-
-func (w walker) Visit(node ast.Node) ast.Visitor {
-	switch n := node.(type) {
-	// declare
-	case *ast.GenDecl:
-		names.CheckGenDecl(n, w.file)
-	case *ast.FuncDecl, *ast.FuncLit:
-		names.CheckFunc(n, w.file)
-		sizes.CheckFunc(n, w.f, w.file, w.src)
-	// statement
-	case *ast.AssignStmt:
-		names.CheckShortVarDecl(n, w.file)
-	case *ast.RangeStmt:
-		names.CheckRangeStmt(n, w.file)
-	// type define
-	case *ast.StructType:
-		names.CheckStruct(n, w.file)
-	case *ast.InterfaceType:
-		names.CheckInterface(n, w.file)
-	}
-	return w
 }
 
 func scanLines(src []byte) (lines []string) {

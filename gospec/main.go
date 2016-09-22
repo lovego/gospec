@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	dirsR, dirs, files := processArgs()
-	for _, d := range dirsR {
+	traDirs, dirs, files := processArgs()
+	for _, d := range traDirs {
 		traverseDir(d)
 	}
 	for _, d := range dirs {
@@ -25,12 +25,12 @@ func main() {
 	}
 }
 
-func processArgs() (traverseDirs, dirs, files []string) {
+func processArgs() (traDirs, dirs, files []string) {
 	for _, p := range os.Args[1:] {
 		switch mode := fileMode(p); {
 		case mode.IsDir():
 			if p[len(p)-1] == '/' {
-				traverseDirs = append(traverseDirs, path.Clean(p))
+				traDirs = append(traDirs, path.Clean(p))
 			} else {
 				dirs = append(dirs, path.Clean(p))
 			}

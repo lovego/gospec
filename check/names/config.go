@@ -2,13 +2,15 @@ package names
 
 import (
 	"fmt"
-	"go/ast"
+	"reflect"
 	"regexp"
 	"strings"
 )
 
 type ConfigT struct {
-	Dir, File, Pkg, Const, Type, Var, Func, Label configT
+	Dir, File, Pkg                         configT
+	Func, Const, Type, Var                 configT
+	LocalConst, LocalType, LocalVar, Label configT
 }
 type configT struct {
 	Style  string
@@ -20,58 +22,71 @@ var Config = ConfigT{
 	File: configT{Style: `lowercase`, MaxLen: 20},
 	Pkg:  configT{Style: `lowercase`, MaxLen: 20},
 
-	Type: configT{Style: `camelCase`, MaxLen: 20},
-	Func: configT{Style: `camelCase`, MaxLen: 20},
-
+	Func:  configT{Style: `camelCase`, MaxLen: 20},
 	Const: configT{Style: `camelCase`, MaxLen: 20},
+	Type:  configT{Style: `camelCase`, MaxLen: 20},
 	Var:   configT{Style: `camelCase`, MaxLen: 20},
-	Label: configT{Style: `camelCase`, MaxLen: 20},
-	// LocalConst: configT{Style: `camelCase`, MaxLen: 10},
-	// LocalVar:   configT{Style: `camelCase`, MaxLen: 10},
+
+	LocalConst: configT{Style: `camelCase`, MaxLen: 10},
+	LocalType:  configT{Style: `camelCase`, MaxLen: 10},
+	LocalVar:   configT{Style: `camelCase`, MaxLen: 10},
+	Label:      configT{Style: `camelCase`, MaxLen: 10},
 }
 
-func getConfig(objKind ast.ObjKind) configT {
-	switch objKind {
-	case ast.Pkg:
-		return Config.Pkg
-	case ast.Con:
-		return Config.Const
-	case ast.Typ:
-		return Config.Type
-	case ast.Var:
-		return Config.Var
-	case ast.Fun:
-		return Config.Func
-	case ast.Lbl:
-		return Config.Label
+var configValue = reflect.Indirect(reflect.ValueOf(&Config))
+
+func getConfig(kind string, local bool) (configT, string) {
+	switch kind {
+	case `package`:
+		return Config.Pkg, `names.pkg`
+	case `func`:
+		return Config.Func, `names.func`
+	case `label`:
+		return Config.Label, `names.label`
 	default:
-		return configT{}
+		key := kind
+		if local {
+			key = `local` + capitalize(key)
+		}
+		value := configValue.FieldByName(capitalize(key))
+		return value.Interface().(configT), `names.` + key
 	}
 }
 
-func checkName(name string, config configT) string {
+func capitalize(s string) string {
+	b := []byte(s)
+	b[0] -= 0x20
+	return string(b)
+}
+
+func checkName(name string, config configT, loose bool) string {
 	if name == `_` {
 		return ``
 	}
 	desc := []string{}
-	if !checkStyle(config.Style, name) {
-		desc = append(desc, fmt.Sprintf(`should be %s style`, config.Style))
-	}
 	if len(name) > config.MaxLen {
 		desc = append(desc, fmt.Sprintf(`%d chars long, limits %d`, len(name), config.MaxLen))
+	}
+	if !checkStyle(name, config.Style, loose) {
+		desc = append(desc, fmt.Sprintf(`should be %s style`, config.Style))
 	}
 	return strings.Join(desc, ` and `)
 }
 
-var lowercaseRegexp = regexp.MustCompile(`^(_?[a-z0-9]+)+$`)
-var camelcaseRegexp = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+var lowercaseUnderline = regexp.MustCompile(`^(_?[a-z0-9]+)+$`)
+var camelcase = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+var lowerCamelCase = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
+var hasUppercase = regexp.MustCompile(`[A-Z]+`)
 
-func checkStyle(style, name string) bool {
+func checkStyle(name, style string, loose bool) bool {
 	switch style {
-	case `lowercase`:
-		return lowercaseRegexp.MatchString(name)
+	case `lower_case`:
+		return loose && !hasUppercase.MatchString(name) || lowercaseUnderline.MatchString(name)
 	case `camelCase`:
-		return camelcaseRegexp.MatchString(name)
+		return loose && strings.IndexByte(name, '_') < 0 || camelcase.MatchString(name)
+	case `lowerCamelCase`:
+		return loose && strings.IndexByte(name, '_') < 0 && (name[0] < 'a' || name[0] > 'z') ||
+			lowerCamelCase.MatchString(name)
 	default:
 		panic(fmt.Sprintf(`unknown style config: "%s".`, style))
 	}

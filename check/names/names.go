@@ -15,28 +15,15 @@ func CheckDir(p string) {
 		return
 	}
 	name := path.Base(p)
-	desc := checkName(name, Config.Dir)
+	desc := checkName(name, Config.Dir, false)
 	if desc != `` {
 		problems.Add(token.Position{Filename: p}, fmt.Sprintf(`dir name %s %s`, name, desc), `names.dir`)
 	}
 }
 
-func CheckPkg(pkg *ast.Package, fset *token.FileSet) {
-	desc := checkName(pkg.Name, Config.Pkg)
-	if desc != `` {
-		var f *ast.File
-		for _, file := range pkg.Files {
-			f = file
-			break
-		}
-		problems.Add(fset.Position(f.Name.Pos()),
-			fmt.Sprintf(`package name %s %s`, pkg.Name, desc), `names.pkg`)
-	}
-}
-
 func CheckFile(p string) {
 	name := path.Base(p)
-	desc := checkName(strings.TrimSuffix(name, `.go`), Config.File)
+	desc := checkName(strings.TrimSuffix(name, `.go`), Config.File, false)
 	if desc != `` {
 		problems.Add(token.Position{Filename: p},
 			fmt.Sprintf(`file name %s %s`, name, desc), `names.file`,
@@ -44,33 +31,32 @@ func CheckFile(p string) {
 	}
 }
 
-func CheckGenDecl(decl *ast.GenDecl, file *token.File) {
+func CheckGenDecl(decl *ast.GenDecl, local bool, file *token.File) {
 	if decl.Tok == token.IMPORT {
 		return
 	}
 	for _, spec := range decl.Specs {
 		switch s := spec.(type) {
 		case *ast.TypeSpec:
-			CheckIdent(s.Name, file, ``)
+			CheckIdent(s.Name, local, file, ``)
 		case *ast.ValueSpec:
 			for _, ident := range s.Names {
-				CheckIdent(ident, file, ``)
+				CheckIdent(ident, local, file, ``)
 			}
 		}
 	}
 }
 
-func CheckFunc(n ast.Node, file *token.File) {
-	switch fun := n.(type) {
-	case *ast.FuncDecl:
-		CheckIdent(fun.Name, file, ``)
-		checkFieldList(fun.Recv, file, `func receiver`)
-		checkFieldList(fun.Type.Params, file, `func param`)
-		checkFieldList(fun.Type.Results, file, `func result`)
-	case *ast.FuncLit:
-		checkFieldList(fun.Type.Params, file, `func param`)
-		checkFieldList(fun.Type.Results, file, `func result`)
-	}
+func CheckFuncDecl(fun *ast.FuncDecl, file *token.File) {
+	CheckIdent(fun.Name, false, file, ``)
+	checkFieldList(fun.Recv, true, file, `func receiver`)
+	checkFieldList(fun.Type.Params, true, file, `func param`)
+	checkFieldList(fun.Type.Results, true, file, `func result`)
+}
+
+func CheckFuncLit(fun *ast.FuncLit, file *token.File) {
+	checkFieldList(fun.Type.Params, true, file, `func param`)
+	checkFieldList(fun.Type.Results, true, file, `func result`)
 }
 
 func CheckShortVarDecl(as *ast.AssignStmt, file *token.File) {
@@ -79,7 +65,7 @@ func CheckShortVarDecl(as *ast.AssignStmt, file *token.File) {
 	}
 	for _, exp := range as.Lhs {
 		if ident, ok := exp.(*ast.Ident); ok {
-			CheckIdent(ident, file, ``)
+			CheckIdent(ident, true, file, ``)
 		}
 	}
 }
@@ -89,54 +75,58 @@ func CheckRangeStmt(rg *ast.RangeStmt, file *token.File) {
 		return
 	}
 	if ident, ok := rg.Key.(*ast.Ident); ok {
-		CheckIdent(ident, file, `range var`)
+		CheckIdent(ident, true, file, `range var`)
 	}
 	if ident, ok := rg.Value.(*ast.Ident); ok {
-		CheckIdent(ident, file, `range var`)
+		CheckIdent(ident, true, file, `range var`)
 	}
 }
 
-func CheckInterface(itfc *ast.InterfaceType, file *token.File) {
-	checkFieldList(itfc.Methods, file, `interface method`)
+func CheckInterface(itfc *ast.InterfaceType, local bool, file *token.File) {
+	checkFieldList(itfc.Methods, local, file, `interface method`)
 }
 
-func CheckStruct(st *ast.StructType, file *token.File) {
-	checkFieldList(st.Fields, file, `struct field`)
+func CheckStruct(st *ast.StructType, local bool, file *token.File) {
+	checkFieldList(st.Fields, local, file, `struct field`)
 }
 
-func CheckIdent(ident *ast.Ident, file *token.File, thing string) {
+func CheckIdent(ident *ast.Ident, local bool, file *token.File, thing string) {
 	if ident == nil || ident.Obj == nil {
 		return
 	}
-	objKind := ident.Obj.Kind
-	conf := getConfig(objKind)
-	if conf.Style == `` {
+	kind := ident.Obj.Kind.String()
+	cfg, rule := getConfig(kind, local)
+	if cfg.Style == `` {
 		return
 	}
-	desc := checkName(ident.Name, conf)
-	if desc == `` {
-		return
+	if desc := checkName(ident.Name, cfg, true); desc != `` {
+		problems.Add(file.Position(ident.Pos()),
+			fmt.Sprintf(`%s name %s %s`, getThing(thing, local, kind), ident.Name, desc), rule,
+		)
 	}
-	kind := objKind.String()
-	if thing == `` {
-		thing = kind
-	}
-	problems.Add(file.Position(ident.Pos()),
-		fmt.Sprintf(`%s name %s %s`, thing, ident.Name, desc), `names.`+kind,
-	)
 }
 
-func checkFieldList(fl *ast.FieldList, file *token.File, thing string) {
+func getThing(thing string, local bool, kind string) string {
+	if thing == `` {
+		if local {
+			thing = `local `
+		}
+		thing += kind
+	}
+	return thing
+}
+
+func checkFieldList(fl *ast.FieldList, local bool, file *token.File, thing string) {
 	if fl == nil {
 		return
 	}
 	for _, f := range fl.List {
 		for _, ident := range f.Names {
-			CheckIdent(ident, file, thing)
+			CheckIdent(ident, local, file, thing)
 		}
 		if ft, ok := f.Type.(*ast.FuncType); ok {
-			checkFieldList(ft.Params, file, thing+` param`)
-			checkFieldList(ft.Results, file, thing+` result`)
+			checkFieldList(ft.Params, true, file, thing+` param`)
+			checkFieldList(ft.Results, true, file, thing+` result`)
 		}
 	}
 }
