@@ -34,17 +34,15 @@ ubuntu@ubuntu:~/go/src/github.com/bughou-go/my_project$ gospec services/
 
 ##### size check
 1. dir max files count check.
-2. file max lines check.
+2. file max lines check (ignore comment lines).
 3. line max length check.
-4. function max lines check.
+4. function max lines check (ignore comment lines).
 
 
 ##### name check
-1. dir name check.
-2. file name check.
-3. package name check.
-4. type, func name check.
-5. const, variable name check.
+1. dir, file, package name check.
+2. func, type, const, variable name check.
+3. local type, local const, local variable, label name check.
 
 ## Config File
 gospec find the config file named "gospec.json" from current working directory upwards. It use the first one it find. If none is found, it uses the following default config:
