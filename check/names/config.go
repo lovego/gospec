@@ -18,19 +18,19 @@ type configT struct {
 }
 
 var Config = ConfigT{
-	Dir:  configT{Style: `lowercase`, MaxLen: 20},
-	File: configT{Style: `lowercase`, MaxLen: 20},
-	Pkg:  configT{Style: `lowercase`, MaxLen: 20},
+	Dir:  configT{Style: `lower_case`, MaxLen: 20},
+	File: configT{Style: `lower_case`, MaxLen: 20},
+	Pkg:  configT{Style: `lower_case`, MaxLen: 20},
 
 	Func:  configT{Style: `camelCase`, MaxLen: 20},
 	Const: configT{Style: `camelCase`, MaxLen: 20},
 	Type:  configT{Style: `camelCase`, MaxLen: 20},
 	Var:   configT{Style: `camelCase`, MaxLen: 20},
 
-	LocalConst: configT{Style: `camelCase`, MaxLen: 10},
-	LocalType:  configT{Style: `camelCase`, MaxLen: 10},
-	LocalVar:   configT{Style: `camelCase`, MaxLen: 10},
-	Label:      configT{Style: `camelCase`, MaxLen: 10},
+	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 10},
+	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 10},
+	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 10},
+	Label:      configT{Style: `lowerCamelCase`, MaxLen: 10},
 }
 
 var configValue = reflect.Indirect(reflect.ValueOf(&Config))

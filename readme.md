@@ -51,18 +51,19 @@ gospec find the config file named "gospec.json" from current working directory u
 ```
 {
   "names": {
-    "dir":        { "style": "lowercase", "maxLen": 20 },
-    "pkg":        { "style": "lowercase", "maxLen": 20 },
-    "file":       { "style": "lowercase", "maxLen": 20 },
+    "dir":        { "style": "lower_case", "maxLen": 20 },
+    "pkg":        { "style": "lower_case", "maxLen": 20 },
+    "file":       { "style": "lower_case", "maxLen": 20 },
 
-    "type":       { "style": "camelCase", "maxLen": 20 },
     "func":       { "style": "camelCase", "maxLen": 20 },
+    "type":       { "style": "camelCase", "maxLen": 20 },
     "const":      { "style": "camelCase", "maxLen": 20 },
     "var":        { "style": "camelCase", "maxLen": 20 },
 
-    "localConst": { "style": "camelCase", "maxLen": 10 },
-    "localVar":   { "style": "camelCase", "maxLen": 10 },
-    "label":      { "style": "camelCase", "maxLen": 10 }
+    "localType":  { "style": "lowerCamelCase", "maxLen": 10 },
+    "localConst": { "style": "lowerCamelCase", "maxLen": 10 },
+    "localVar":   { "style": "lowerCamelCase", "maxLen": 10 },
+    "label":      { "style": "lowerCamelCase", "maxLen": 10 }
   },
   "sizes": {
     "dir": 20, "file": 200, "line": 100, "func": 20
