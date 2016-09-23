@@ -1,6 +1,7 @@
 package problems
 
 import (
+	"flag"
 	"go/token"
 	"os"
 	"strconv"
@@ -8,10 +9,13 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-const limit = 10
-
-var count uint = 0
+var count, limit uint
 var table = newTable()
+
+func init() {
+	flag.UintVar(&limit, `limit`, 0, `limit the max problems to check.`)
+	flag.Parse()
+}
 
 func Add(position token.Position, desc, rule string) {
 	table.Append([]string{positionString(position), desc, rule})

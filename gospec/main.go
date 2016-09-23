@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"path"
 
@@ -26,7 +27,7 @@ func main() {
 }
 
 func processArgs() (traDirs, dirs, files []string) {
-	for _, p := range os.Args[1:] {
+	for _, p := range flag.Args() {
 		switch mode := fileMode(p); {
 		case mode.IsDir():
 			if p[len(p)-1] == '/' {
