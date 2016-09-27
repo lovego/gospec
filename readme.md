@@ -34,9 +34,9 @@ ubuntu@ubuntu:~/go/src/github.com/bughou-go/my_project$ gospec services/
 
 ##### size check
 1. dir max files count check.
-2. file max lines check (ignore comment lines).
-3. line max length check.
-4. function max lines check (ignore comment lines).
+2. file max lines count check (ignore comment lines).
+3. line max chars length check.
+4. function max statements count check.
 
 
 ##### name check

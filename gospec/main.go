@@ -45,7 +45,7 @@ func processArgs() (traDirs, dirs, files []string) {
 }
 
 func willBuild(p string) bool {
-	return path.Ext(p) == `.go` && p[0] != '.' && p[0] != '_'
+	return path.Ext(p) == `.go` && path.Base(p)[0] != '.' && p[0] != '_'
 }
 
 func fileMode(p string) os.FileMode {

@@ -68,21 +68,32 @@ func CheckFunc(fun ast.Node, f *ast.File, file *token.File, src []string) {
 	if Config.Func <= 0 {
 		return
 	}
-	position := file.Position(fun.Pos())
-	count := file.Line(fun.End()) - position.Line
-	if count <= Config.Func {
-		return
-	}
-	if count -= commentsLineCount(fun, f, file, src); count <= Config.Func {
+	w := &stmtWalker{}
+	ast.Walk(w, fun)
+	if w.count <= Config.Func {
 		return
 	}
 	var name string
 	if funct, ok := fun.(*ast.FuncDecl); ok {
 		name = funct.Name.Name
 	}
-	problems.Add(position,
-		fmt.Sprintf(`func %s size: %d lines, limits %d`, name, count, Config.Func), `sizes.func`,
+	problems.Add(file.Position(fun.Pos()),
+		fmt.Sprintf(`func %s size: %d statements, limits %d`, name, w.count, Config.Func), `sizes.func`,
 	)
+}
+
+type stmtWalker struct {
+	count int
+}
+
+func (w *stmtWalker) Visit(node ast.Node) ast.Visitor {
+	if stmt, ok := node.(ast.Stmt); ok {
+		if _, ok := stmt.(*ast.BlockStmt); !ok {
+			// fmt.Printf("%T\n", stmt)
+			w.count++
+		}
+	}
+	return w
 }
 
 func entriesCount(dir string) int {
