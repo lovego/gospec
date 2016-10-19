@@ -51,12 +51,12 @@ func CheckFile(f *ast.File, file *token.File, src []string) {
 	)
 }
 
-func CheckLines(p string, src []string) {
+func CheckLines(p string, f *ast.File, file *token.File, src []string) {
 	if Config.Line <= 0 {
 		return
 	}
 	for i, line := range src {
-		if width := runewidth.StringWidth(line); width > Config.Line {
+		if width := runewidth.StringWidth(line); width > Config.Line && !isComment(i+1, f, file, src) {
 			problems.Add(token.Position{Filename: p, Line: i + 1}, fmt.Sprintf(
 				`line %d size: %d chars wide, limits %d`, i+1, width, Config.Line), `sizes.line`,
 			)
@@ -116,12 +116,10 @@ func commentsLineCount(context ast.Node, f *ast.File, file *token.File, src []st
 			continue
 		}
 		start, end := file.Position(cg.Pos()), file.Position(cg.End())
-		// non blank prefix
-		if line := src[start.Line-1]; !isWhitespace(line[:start.Column-1]) {
+		if !blankPrefix(src[start.Line-1], start) {
 			start.Line += 1
 		}
-		// blank suffix
-		if line := src[end.Line-1]; isWhitespace(line[end.Column-1:]) {
+		if blankSuffix(src[end.Line-1], end) {
 			end.Line += 1
 		}
 		count += end.Line - start.Line
@@ -129,6 +127,34 @@ func commentsLineCount(context ast.Node, f *ast.File, file *token.File, src []st
 	return count
 }
 
-func isWhitespace(s string) bool {
-	return len(s) == 0 || len(strings.TrimSpace(s)) == 0
+func isComment(lineNum int, f *ast.File, file *token.File, src []string) bool {
+	for _, cg := range f.Comments {
+		start, end := file.Position(cg.Pos()), file.Position(cg.End())
+		if lineNum < start.Line || lineNum > end.Line {
+			continue
+		}
+		if lineNum == start.Line && !blankPrefix(src[start.Line-1], start) ||
+			lineNum == end.Line && !blankSuffix(src[end.Line-1], end) {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func blankPrefix(line string, start token.Position) bool {
+	if start.Column <= 1 {
+		return true
+	}
+	suffix := line[:start.Column-1]
+	return len(strings.TrimSpace(suffix)) == 0
+}
+
+func blankSuffix(line string, end token.Position) bool {
+	// end is the next pos after ending token
+	if end.Column > len(line) {
+		return true
+	}
+	suffix := line[end.Column-1:]
+	return len(strings.TrimSpace(suffix)) == 0
 }

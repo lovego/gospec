@@ -36,7 +36,7 @@ func checkFile(f *ast.File, file *token.File, i int, src []string) {
 	names.CheckFile(file.Name())
 	sizes.CheckFile(f, file, src)
 
-	sizes.CheckLines(file.Name(), src)
+	sizes.CheckLines(file.Name(), f, file, src)
 	ast.Walk(walker{f, file, src}, f)
 }
 
