@@ -1,4 +1,3 @@
 .*.swp
 *.test
 tmp
-/bin/gospec

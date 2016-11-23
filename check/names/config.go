@@ -27,10 +27,10 @@ var Config = ConfigT{
 	Type:  configT{Style: `camelCase`, MaxLen: 20},
 	Var:   configT{Style: `camelCase`, MaxLen: 20},
 
-	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 10},
-	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 10},
-	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 10},
-	Label:      configT{Style: `lowerCamelCase`, MaxLen: 10},
+	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 15},
+	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 15},
+	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 15},
+	Label:      configT{Style: `lowerCamelCase`, MaxLen: 15},
 }
 
 var configValue = reflect.Indirect(reflect.ValueOf(&Config))
