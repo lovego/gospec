@@ -33,7 +33,7 @@ var Config = ConfigT{
 	Label:      configT{Style: `lowerCamelCase`, MaxLen: 15},
 }
 
-var configValue = reflect.Indirect(reflect.ValueOf(&Config))
+var configValue = reflect.ValueOf(&Config).Elem()
 
 func getConfig(kind string, local bool) (configT, string) {
 	switch kind {
