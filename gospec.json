@@ -2,7 +2,7 @@
   "names": {
     "dir":        { "style": "lower_case", "maxLen": 20 },
     "pkg":        { "style": "lower_case", "maxLen": 20 },
-    "file":       { "style": "lower-case", "maxLen": 20 },
+    "file":       { "style": "lower_case", "maxLen": 20 },
 
     "func":       { "style": "camelCase", "maxLen": 30 },
     "type":       { "style": "camelCase", "maxLen": 30 },

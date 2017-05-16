@@ -19,7 +19,7 @@ type configT struct {
 
 var Config = ConfigT{
 	Dir:  configT{Style: `lower_case`, MaxLen: 20},
-	File: configT{Style: `lower-case`, MaxLen: 20},
+	File: configT{Style: `lower_case`, MaxLen: 20},
 	Pkg:  configT{Style: `lower_case`, MaxLen: 20},
 
 	Func:  configT{Style: `camelCase`, MaxLen: 30},
