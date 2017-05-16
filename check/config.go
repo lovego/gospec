@@ -6,8 +6,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/bughou-go/spec/check/names"
-	"github.com/bughou-go/spec/check/sizes"
+	"github.com/lovego/spec/check/names"
+	"github.com/lovego/spec/check/sizes"
 )
 
 func init() {

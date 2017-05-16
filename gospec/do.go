@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/bughou-go/spec/check"
+	"github.com/lovego/spec/check"
 )
 
 func traverseDir(p string) {

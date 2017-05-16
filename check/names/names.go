@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/bughou-go/spec/problems"
+	"github.com/lovego/spec/problems"
 )
 
 func CheckDir(p string) {

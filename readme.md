@@ -2,7 +2,7 @@
 a configurable golang coding spec checker.
 
 ## Installation
-    go get github.com/bughou-go/spec/gospec
+    go get github.com/lovego/spec/gospec
 
 ## Usage
     gospec [ <dir>/ | <dir> | <file> ] ...
@@ -12,7 +12,7 @@ a configurable golang coding spec checker.
 
 exmaple:
 ```
-ubuntu@ubuntu:~/go/src/github.com/bughou-go/my_project$ gospec services/
+ubuntu@ubuntu:~/go/src/github.com/lovego/my_project$ gospec services/
 +---------------------------------------+--------------------------------------------------+------------+
 |               position                |                     problem                      |    rule    |
 +---------------------------------------+--------------------------------------------------+------------+

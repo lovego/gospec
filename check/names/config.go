@@ -19,18 +19,18 @@ type configT struct {
 
 var Config = ConfigT{
 	Dir:  configT{Style: `lower_case`, MaxLen: 20},
-	File: configT{Style: `lower_case`, MaxLen: 20},
+	File: configT{Style: `lower-case`, MaxLen: 20},
 	Pkg:  configT{Style: `lower_case`, MaxLen: 20},
 
-	Func:  configT{Style: `camelCase`, MaxLen: 20},
-	Const: configT{Style: `camelCase`, MaxLen: 20},
-	Type:  configT{Style: `camelCase`, MaxLen: 20},
-	Var:   configT{Style: `camelCase`, MaxLen: 20},
+	Func:  configT{Style: `camelCase`, MaxLen: 30},
+	Const: configT{Style: `camelCase`, MaxLen: 30},
+	Type:  configT{Style: `camelCase`, MaxLen: 30},
+	Var:   configT{Style: `camelCase`, MaxLen: 30},
 
-	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 15},
-	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 15},
-	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 15},
-	Label:      configT{Style: `lowerCamelCase`, MaxLen: 15},
+	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 20},
+	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 20},
+	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 20},
+	Label:      configT{Style: `lowerCamelCase`, MaxLen: 20},
 }
 
 var configValue = reflect.ValueOf(&Config).Elem()
@@ -73,15 +73,20 @@ func checkName(name string, config configT, loose bool) string {
 	return strings.Join(desc, ` and `)
 }
 
-var lowercaseUnderline = regexp.MustCompile(`^(_?[a-z0-9]+)+$`)
+var lowercaseUnderscore = regexp.MustCompile(`^(_?[a-z0-9]+)+$`)
+var lowercaseDash = regexp.MustCompile(`^(-?[a-z0-9]+)+$`)
 var camelcase = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 var lowerCamelCase = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
 var hasUppercase = regexp.MustCompile(`[A-Z]+`)
+var hasUppercaseOrUnderscore = regexp.MustCompile(`[A-Z_]+`)
 
 func checkStyle(name, style string, loose bool) bool {
 	switch style {
 	case `lower_case`:
-		return loose && !hasUppercase.MatchString(name) || lowercaseUnderline.MatchString(name)
+		return loose && !hasUppercase.MatchString(name) || lowercaseUnderscore.MatchString(name)
+	case `lower-case`:
+		return loose && !hasUppercaseOrUnderscore.MatchString(name) ||
+			lowercaseDash.MatchString(name)
 	case `camelCase`:
 		return loose && strings.IndexByte(name, '_') < 0 || camelcase.MatchString(name)
 	case `lowerCamelCase`:
