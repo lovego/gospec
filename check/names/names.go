@@ -25,7 +25,6 @@ func CheckFile(p string) {
 	name := path.Base(p)
 	namePart := strings.TrimSuffix(name, `.go`)
 	namePart = strings.TrimSuffix(namePart, `_test`)
-	fmt.Println(namePart)
 	desc := checkName(namePart, Config.File, false)
 	if desc != `` {
 		problems.Add(token.Position{Filename: p},
