@@ -7,7 +7,7 @@ a configurable golang coding spec checker.
 ## Usage
     gospec [ <dir>/ | <dir> | <file> ] ...
 - dir with trailing "/" means check all the packages in dir and it&apos;s subdir.
-- dir without trailing "/" means check only th package in dir, not include it&apos;s subdir.
+- dir without trailing "/" means check only the package in dir, not include it&apos;s subdir.
 - file means check only the file.
 
 exmaple:
