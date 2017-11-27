@@ -34,8 +34,8 @@ ubuntu@ubuntu:~/go/src/github.com/lovego/my_project$ gospec services/
 
 ##### size check
 1. dir max files count check.
-2. file max lines count check (ignore comment lines).
-3. line max chars length check.
+2. line max width(chars) check.
+3. file max lines count check (ignore comment lines).
 4. function max statements count check.
 
 
@@ -45,26 +45,6 @@ ubuntu@ubuntu:~/go/src/github.com/lovego/my_project$ gospec services/
 3. local type, local const, local variable, label name check.
 
 ## Config File
-gospec find the config file named "gospec.json" from current working directory upwards. It use the first one it find. If none is found, it uses the following default config:
-```
-{
-  "names": {
-    "dir":        { "style": "lower_case", "maxLen": 20 },
-    "pkg":        { "style": "lower_case", "maxLen": 20 },
-    "file":       { "style": "lower_case", "maxLen": 20 },
+gospec find the config file named "gospec.json" from current working directory upwards.
+It use the first one it find. If none is found, it uses the <a href="gospec.json">default config</a>.
 
-    "func":       { "style": "camelCase", "maxLen": 20 },
-    "type":       { "style": "camelCase", "maxLen": 20 },
-    "const":      { "style": "camelCase", "maxLen": 20 },
-    "var":        { "style": "camelCase", "maxLen": 20 },
-
-    "localType":  { "style": "lowerCamelCase", "maxLen": 15 },
-    "localConst": { "style": "lowerCamelCase", "maxLen": 15 },
-    "localVar":   { "style": "lowerCamelCase", "maxLen": 15 },
-    "label":      { "style": "lowerCamelCase", "maxLen": 15 }
-  },
-  "sizes": {
-    "dir": 20, "file": 200, "line": 100, "func": 20
-  }
-}
-```

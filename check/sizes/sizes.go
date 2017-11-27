@@ -13,10 +13,10 @@ import (
 )
 
 type ConfigT struct {
-	Dir, File, Line, Func int
+	Dir, Line, File, Func int
 }
 
-var Config = ConfigT{Dir: 20, File: 200, Line: 100, Func: 20}
+var Config = ConfigT{Dir: 20, Line: 100, File: 300, Func: 30}
 
 func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
