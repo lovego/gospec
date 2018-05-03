@@ -97,7 +97,7 @@ func CheckIdent(ident *ast.Ident, local bool, file *token.File, thing string) {
 		return
 	}
 	kind := ident.Obj.Kind.String()
-	cfg, rule := getConfig(kind, local)
+	cfg, rule := getConfig(kind, local, file.Name())
 	if cfg.Style == `` {
 		return
 	}

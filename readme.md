@@ -33,16 +33,16 @@ ubuntu@ubuntu:~/go/src/github.com/lovego/my_project$ gospec services/
 ## Checking Rules
 
 ##### size check
-1. dir max files count check.
+1. dir max entries count check.
 2. line max width(chars) check.
 3. file max lines count check (ignore comment lines).
 4. function max statements count check.
 
 
 ##### name check
-1. dir, file, package name check.
-2. func, type, const, variable name check.
-3. local type, local const, local variable, label name check.
+1. dir name, file name, package name check.
+2. type name, const name, variable name, func name check.
+3. local type name, local const name, local variable name, label name check.
 
 ## Config File
 gospec find the config file named "gospec.json" from current working directory upwards.

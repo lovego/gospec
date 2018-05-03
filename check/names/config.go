@@ -9,7 +9,7 @@ import (
 
 type ConfigT struct {
 	Dir, File, Pkg                         configT
-	Func, Const, Type, Var                 configT
+	Const, Type, Var, Func, FuncInTest     configT
 	LocalConst, LocalType, LocalVar, Label configT
 }
 type configT struct {
@@ -22,10 +22,11 @@ var Config = ConfigT{
 	File: configT{Style: `lower_case`, MaxLen: 20},
 	Pkg:  configT{Style: `lower_case`, MaxLen: 20},
 
-	Func:  configT{Style: `camelCase`, MaxLen: 30},
-	Const: configT{Style: `camelCase`, MaxLen: 30},
-	Type:  configT{Style: `camelCase`, MaxLen: 30},
-	Var:   configT{Style: `camelCase`, MaxLen: 30},
+	Type:       configT{Style: `camelCase`, MaxLen: 30},
+	Const:      configT{Style: `camelCase`, MaxLen: 30},
+	Var:        configT{Style: `camelCase`, MaxLen: 30},
+	Func:       configT{Style: `camelCase`, MaxLen: 30},
+	FuncInTest: configT{Style: `camelCase`, MaxLen: 50},
 
 	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 20},
 	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 20},
@@ -35,12 +36,16 @@ var Config = ConfigT{
 
 var configValue = reflect.ValueOf(&Config).Elem()
 
-func getConfig(kind string, local bool) (configT, string) {
+func getConfig(kind string, local bool, fileName string) (configT, string) {
 	switch kind {
 	case `package`:
 		return Config.Pkg, `names.pkg`
 	case `func`:
-		return Config.Func, `names.func`
+		if strings.HasSuffix(fileName, "_test.go") {
+			return Config.FuncInTest, `names.funcInTest`
+		} else {
+			return Config.Func, `names.func`
+		}
 	case `label`:
 		return Config.Label, `names.label`
 	default:
