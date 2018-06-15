@@ -24,13 +24,13 @@ var Config = ConfigT{
 
 	Type:       configT{Style: `camelCase`, MaxLen: 30},
 	Const:      configT{Style: `camelCase`, MaxLen: 30},
-	Var:        configT{Style: `camelCase`, MaxLen: 30},
+	Var:        configT{Style: `camelCase`, MaxLen: 40},
 	Func:       configT{Style: `camelCase`, MaxLen: 30},
 	FuncInTest: configT{Style: `camelCase`, MaxLen: 50},
 
 	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 20},
 	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 20},
-	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 20},
+	LocalVar:   configT{Style: `lowerCamelCase`, MaxLen: 30},
 	Label:      configT{Style: `lowerCamelCase`, MaxLen: 20},
 }
 
