@@ -16,6 +16,6 @@
     "label":      { "style": "lowerCamelCase", "maxLen": 20 }
   },
   "sizes": {
-    "dir": 20, "line": 100, "file": 300, "func": 30
+    "dir": 20, "line": 120, "file": 300, "func": 30
   }
 }

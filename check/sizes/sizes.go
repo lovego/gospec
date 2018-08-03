@@ -13,10 +13,10 @@ import (
 )
 
 type ConfigT struct {
-	Dir, Line, File, Func int
+	Dir, File, TestFile, Line, Func int
 }
 
-var Config = ConfigT{Dir: 20, Line: 100, File: 300, Func: 30}
+var Config = ConfigT{Dir: 20, File: 300, TestFile: 600, Line: 100, Func: 30}
 
 func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
@@ -38,10 +38,12 @@ func CheckFile(f *ast.File, file *token.File, src []string) {
 		return
 	}
 	count := file.LineCount()
-	if count <= Config.File {
+	isTestFile := strings.HasSuffix(file.Name(), "_test.go")
+	if isTestFile && count <= Config.TestFile || count <= Config.File {
 		return
 	}
-	if count -= commentsLineCount(nil, f, file, src); count <= Config.File {
+	count -= commentsLineCount(nil, f, file, src)
+	if isTestFile && count <= Config.TestFile || count <= Config.File {
 		return
 	}
 	problems.Add(
