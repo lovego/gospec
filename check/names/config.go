@@ -26,7 +26,7 @@ var Config = ConfigT{
 	Const:      configT{Style: `camelCase`, MaxLen: 30},
 	Var:        configT{Style: `camelCase`, MaxLen: 40},
 	Func:       configT{Style: `camelCase`, MaxLen: 30},
-	FuncInTest: configT{Style: `camelCase`, MaxLen: 50},
+	FuncInTest: configT{Style: `camelCaseInTest`, MaxLen: 50},
 
 	LocalConst: configT{Style: `lowerCamelCase`, MaxLen: 20},
 	LocalType:  configT{Style: `lowerCamelCase`, MaxLen: 20},
@@ -84,6 +84,7 @@ var camelcase = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 var lowerCamelCase = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
 var hasUppercase = regexp.MustCompile(`[A-Z]+`)
 var hasUppercaseOrUnderscore = regexp.MustCompile(`[A-Z_]+`)
+var exampleTestCase = regexp.MustCompile(`^Example[_A-Z]`)
 
 func checkStyle(name, style string, loose bool) bool {
 	switch style {
@@ -94,6 +95,9 @@ func checkStyle(name, style string, loose bool) bool {
 			lowercaseDash.MatchString(name)
 	case `camelCase`:
 		return loose && strings.IndexByte(name, '_') < 0 || camelcase.MatchString(name)
+	case `camelCaseInTest`:
+		return loose && strings.IndexByte(name, '_') < 0 || camelcase.MatchString(name) ||
+			exampleTestCase.MatchString(name)
 	case `lowerCamelCase`:
 		return loose && strings.IndexByte(name, '_') < 0 && (name[0] < 'a' || name[0] > 'z') ||
 			lowerCamelCase.MatchString(name)
