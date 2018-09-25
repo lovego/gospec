@@ -8,7 +8,7 @@
     "const":      { "style": "camelCase", "maxLen": 30 },
     "var":        { "style": "camelCase", "maxLen": 40 },
     "func":       { "style": "camelCase", "maxLen": 30 },
-    "funcInTest": { "style": "camelCase", "maxLen": 50 },
+    "funcInTest": { "style": "camelCaseInTest", "maxLen": 50 },
 
     "localType":  { "style": "lowerCamelCase", "maxLen": 20 },
     "localConst": { "style": "lowerCamelCase", "maxLen": 20 },

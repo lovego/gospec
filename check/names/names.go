@@ -101,7 +101,8 @@ func CheckIdent(ident *ast.Ident, local bool, file *token.File, thing string) {
 	if cfg.Style == `` {
 		return
 	}
-	if desc := checkName(ident.Name, cfg, true); desc != `` {
+
+	if desc := checkName(ident.Name, cfg, false); desc != `` {
 		problems.Add(file.Position(ident.Pos()),
 			fmt.Sprintf(`%s name %s %s`, getThing(thing, local, kind), ident.Name, desc), rule,
 		)

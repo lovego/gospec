@@ -49,11 +49,11 @@ func getConfig(kind string, local bool, fileName string) (configT, string) {
 	case `label`:
 		return Config.Label, `names.label`
 	default:
-		key := kind
+		key := capitalize(kind)
 		if local {
-			key = `local` + capitalize(key)
+			key = `Local` + key
 		}
-		value := configValue.FieldByName(capitalize(key))
+		value := configValue.FieldByName(key)
 		return value.Interface().(configT), `names.` + key
 	}
 }
