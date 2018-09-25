@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/lovego/gospec/problems"
+	"github.com/lovego/gospec/rules"
 )
 
 func main() {
@@ -14,15 +15,63 @@ func main() {
 		traverseDir(d)
 	}
 	for _, d := range dirs {
-		doDir(d)
+		checkDir(d)
 	}
 	if len(files) > 0 {
-		doFiles(files)
+		checkFiles(files)
 	}
 
 	if problems.Count() > 0 {
 		problems.Render()
 		os.Exit(1)
+	}
+}
+
+func traverseDir(p string) {
+	f, err := os.Open(p)
+	if err != nil {
+		panic(err)
+	}
+	list, err := f.Readdir(-1)
+	if err != nil {
+		panic(err)
+	}
+	for _, d := range list {
+		if d.IsDir() && d.Name()[0] != '.' {
+			traverseDir(path.Join(p, d.Name()))
+		}
+	}
+	checkDir(p)
+}
+
+func checkDir(dir string) {
+	f, err := os.Open(dir)
+	if err != nil {
+		panic(err)
+	}
+	names, err := f.Readdirnames(-1)
+	if err != nil {
+		panic(err)
+	}
+	files := make([]string, 0, len(names))
+	for _, name := range names {
+		if willBuild(name) {
+			files = append(files, path.Join(dir, name))
+		}
+	}
+	if len(files) > 0 {
+		rules.Check(dir, files)
+	}
+}
+
+func checkFiles(paths []string) {
+	dirs := make(map[string][]string)
+	for _, p := range paths {
+		dir := path.Dir(p)
+		dirs[dir] = append(dirs[dir], p)
+	}
+	for dir, files := range dirs {
+		rules.Check(dir, files)
 	}
 }
 

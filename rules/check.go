@@ -1,4 +1,4 @@
-package check
+package rules
 
 import (
 	"bufio"
@@ -8,9 +8,9 @@ import (
 	"go/token"
 	"io/ioutil"
 
-	"github.com/lovego/gospec/check/names"
-	"github.com/lovego/gospec/check/orders"
-	"github.com/lovego/gospec/check/sizes"
+	"github.com/lovego/gospec/rules/names"
+	"github.com/lovego/gospec/rules/orders"
+	"github.com/lovego/gospec/rules/sizes"
 )
 
 func Check(dir string, files []string) {

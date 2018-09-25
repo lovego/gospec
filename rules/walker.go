@@ -1,4 +1,4 @@
-package check
+package rules
 
 import (
 	"go/ast"

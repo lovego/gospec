@@ -1,4 +1,4 @@
-package check
+package rules
 
 import (
 	"encoding/json"
@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/lovego/gospec/check/names"
-	"github.com/lovego/gospec/check/orders"
-	"github.com/lovego/gospec/check/sizes"
+	"github.com/lovego/gospec/rules/names"
+	"github.com/lovego/gospec/rules/orders"
+	"github.com/lovego/gospec/rules/sizes"
 )
 
 func init() {
