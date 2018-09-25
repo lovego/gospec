@@ -18,6 +18,26 @@ type ConfigT struct {
 	Dir, File, TestFile, Line, Func int
 }
 
+type FuncConfigT struct {
+	Param  int
+	Result int
+}
+
+var FuncConfig = FuncConfigT{
+	Param:  5,
+	Result: 3,
+}
+
+func getFuncConfig(kind string) int {
+	switch kind {
+	case `param`:
+		return FuncConfig.Param
+	case `result`:
+		return FuncConfig.Result
+	}
+	return 0
+}
+
 type SizeWalker struct {
 	srcFile *token.File
 	funcs   []funcNode
@@ -36,6 +56,11 @@ func NewWalker(srcFile *token.File) *SizeWalker {
 		srcFile: srcFile,
 		index:   -1,
 	}
+}
+
+func Check() {
+	sizes.CheckFile(f, file, src)
+	sizes.CheckLines(file.Name(), f, file, src)
 }
 
 func CheckDir(dir string) {
@@ -140,6 +165,36 @@ func (sw *SizeWalker) CheckFuncs() {
 			fmt.Sprintf(`func %s size: %d statements, limits %d`, name, *count, Config.Func), `sizes.func`,
 		)
 	}
+	checkParamNum(fun.Name.Name, fun.Type.Params, `param`, fileSet.Position(fun.Pos()))
+	checkResultNum("", fun.Type.Results, `result`, fileSet.Position(fun.Pos()))
+
+	checkParamNum("", fun.Type.Params, `param`, fileSet.Position(fun.Pos()))
+	checkResultNum("", fun.Type.Params, `param`, fileSet.Position(fun.Pos()))
+}
+
+func checkParamNum(name string, list *ast.FieldList, kind string,
+	pos token.Position) {
+	checkNum(name, list, kind, pos)
+}
+
+func checkResultNum(name string, list *ast.FieldList, kind string,
+	pos token.Position) {
+	checkNum(name, list, kind, pos)
+}
+
+func checkNum(name string, list *ast.FieldList, kind string,
+	pos token.Position) {
+	if list == nil {
+		return
+	}
+	num := list.NumFields()
+	upperLimit := getFuncConfig(kind)
+	if num <= upperLimit || upperLimit == 0 {
+		return
+	}
+	desc := fmt.Sprintf("func:%s %s number:%d beyond limit:%d",
+		name, kind, num, upperLimit)
+	problems.Add(pos, desc, `names.file`)
 }
 
 func entriesCount(dir string) int {
@@ -203,4 +258,15 @@ func blankSuffix(line string, end token.Position) bool {
 	}
 	suffix := line[end.Column-1:]
 	return len(strings.TrimSpace(suffix)) == 0
+}
+
+func scanLines(src []byte) (lines []string) {
+	scanner := bufio.NewScanner(bytes.NewReader(src))
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+	return
 }
