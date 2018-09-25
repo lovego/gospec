@@ -3,7 +3,7 @@ cd $(dirname $0)
 
 test -d tmp || mkdir tmp
 
-GOBIN=$(pwd)/tmp go install ./gospec || exit 1 #-gcflags "-N -l" 
+GOBIN=$(pwd)/tmp go install || exit 1 #-gcflags "-N -l" 
 
 if [[ $1 = debug ]]; then
   dlv exec tmp/gospec "${@:1}"

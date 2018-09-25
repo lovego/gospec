@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/lovego/spec/problems"
+	"github.com/lovego/gospec/problems"
 )
 
 func main() {

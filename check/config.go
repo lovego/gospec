@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/lovego/spec/check/names"
-	"github.com/lovego/spec/check/orders"
-	"github.com/lovego/spec/check/sizes"
+	"github.com/lovego/gospec/check/names"
+	"github.com/lovego/gospec/check/orders"
+	"github.com/lovego/gospec/check/sizes"
 )
 
 func init() {

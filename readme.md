@@ -13,7 +13,7 @@ a configurable golang coding spec checker.
 3. local type name, local const name, local variable name, label name check.
 
 ## Installation
-    go get github.com/lovego/spec/gospec
+    go get github.com/lovego/gospec/gospec
 
 ## Usage
     gospec [ <dir>/ | <dir> | <file> ] ...

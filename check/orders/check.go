@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"path"
 
-	"github.com/lovego/spec/problems"
+	"github.com/lovego/gospec/problems"
 )
 
 type OrdersConfigT struct {

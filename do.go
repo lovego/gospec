@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/lovego/spec/check"
+	"github.com/lovego/gospec/check"
 )
 
 func traverseDir(p string) {

@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/lovego/spec/problems"
+	"github.com/lovego/gospec/problems"
 )
 
 type NameWalker struct {
