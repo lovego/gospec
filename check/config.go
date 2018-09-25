@@ -7,6 +7,7 @@ import (
 	"path"
 
 	"github.com/lovego/spec/check/names"
+	"github.com/lovego/spec/check/orders"
 	"github.com/lovego/spec/check/sizes"
 )
 
@@ -29,11 +30,15 @@ func parseConfig() {
 
 func parseConfigContent(content []byte) {
 	var config = &struct {
-		Sizes *sizes.ConfigT
-		Names *names.ConfigT
+		Sizes  *sizes.ConfigT
+		Names  *names.ConfigT
+		Funcs  *names.FuncConfigT
+		Orders *orders.OrdersConfigT
 	}{
-		Sizes: &sizes.Config,
-		Names: &names.Config,
+		Sizes:  &sizes.Config,
+		Names:  &names.Config,
+		Funcs:  &names.FuncConfig,
+		Orders: &orders.Config,
 	}
 	if err := json.Unmarshal(content, config); err != nil {
 		panic(err)

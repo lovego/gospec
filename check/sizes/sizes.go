@@ -12,11 +12,31 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
+var Config = ConfigT{Dir: 20, File: 300, TestFile: 600, Line: 100, Func: 30}
+
 type ConfigT struct {
 	Dir, File, TestFile, Line, Func int
 }
 
-var Config = ConfigT{Dir: 20, File: 300, TestFile: 600, Line: 100, Func: 30}
+type SizeWalker struct {
+	srcFile *token.File
+	funcs   []funcNode
+	counts  []*int
+	index   int
+}
+
+type funcNode struct {
+	node  ast.Node
+	begin int
+	end   int
+}
+
+func NewWalker(srcFile *token.File) *SizeWalker {
+	return &SizeWalker{
+		srcFile: srcFile,
+		index:   -1,
+	}
+}
 
 func CheckDir(dir string) {
 	if dir == `` || Config.Dir <= 0 {
@@ -31,6 +51,43 @@ func CheckDir(dir string) {
 			`dir %s size: %d entries, limits %d`, path.Base(dir), count, Config.Dir,
 		), `sizes.dir`,
 	)
+}
+
+func (sw *SizeWalker) getIndex(node ast.Node) int {
+	pos := sw.srcFile.Position(node.Pos())
+	for i := len(sw.funcs) - 1; i >= 0; i-- {
+		fnNode := sw.funcs[i]
+		if pos.Line > fnNode.begin && pos.Line < fnNode.end {
+			return i
+		}
+	}
+	return 0
+}
+
+func (sw *SizeWalker) addFunc(node ast.Node, body *ast.BlockStmt) {
+	sw.index++
+	begin := sw.srcFile.Position(body.Lbrace).Line
+	end := sw.srcFile.Position(body.Rbrace).Line
+	sw.funcs = append(sw.funcs, funcNode{node: node, begin: begin, end: end})
+	sw.counts = append(sw.counts, new(int))
+}
+
+func (sw *SizeWalker) Visit(node ast.Node) ast.Node {
+	switch node.(type) {
+	case ast.Stmt:
+		if _, ok := node.(*ast.BlockStmt); !ok {
+			index := sw.getIndex(node)
+			count := sw.counts[index]
+			*count++
+		}
+	case *ast.FuncLit:
+		v := node.(*ast.FuncLit)
+		sw.addFunc(node, v.Body)
+	case *ast.FuncDecl:
+		v := node.(*ast.FuncDecl)
+		sw.addFunc(node, v.Body)
+	}
+	return node
 }
 
 func CheckFile(f *ast.File, file *token.File, src []string) {
@@ -66,36 +123,23 @@ func CheckLines(p string, f *ast.File, file *token.File, src []string) {
 	}
 }
 
-func CheckFunc(fun ast.Node, f *ast.File, file *token.File, src []string) {
+func (sw *SizeWalker) CheckFuncs() {
 	if Config.Func <= 0 {
 		return
 	}
-	w := &stmtWalker{}
-	ast.Walk(w, fun)
-	if w.count <= Config.Func {
-		return
-	}
-	var name string
-	if funct, ok := fun.(*ast.FuncDecl); ok {
-		name = funct.Name.Name
-	}
-	problems.Add(file.Position(fun.Pos()),
-		fmt.Sprintf(`func %s size: %d statements, limits %d`, name, w.count, Config.Func), `sizes.func`,
-	)
-}
-
-type stmtWalker struct {
-	count int
-}
-
-func (w *stmtWalker) Visit(node ast.Node) ast.Visitor {
-	if stmt, ok := node.(ast.Stmt); ok {
-		if _, ok := stmt.(*ast.BlockStmt); !ok {
-			// fmt.Printf("%T\n", stmt)
-			w.count++
+	for i, fn := range sw.funcs {
+		count := sw.counts[i]
+		if *count <= Config.Func {
+			continue
 		}
+		var name string
+		if funct, ok := fn.node.(*ast.FuncDecl); ok {
+			name = funct.Name.Name
+		}
+		problems.Add(sw.srcFile.Position(fn.node.Pos()),
+			fmt.Sprintf(`func %s size: %d statements, limits %d`, name, *count, Config.Func), `sizes.func`,
+		)
 	}
-	return w
 }
 
 func entriesCount(dir string) int {

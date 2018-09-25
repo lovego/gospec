@@ -17,5 +17,11 @@
   },
   "sizes": {
     "dir": 20, "file": 300, "testFile": 600, "line": 120, "func": 30
+  },
+  "funcs":{
+   "param":5, "result":3
+  },
+  "orders":{
+    "funcCheck": true, "varCheck": true
   }
 }

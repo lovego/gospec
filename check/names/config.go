@@ -34,7 +34,27 @@ var Config = ConfigT{
 	Label:      configT{Style: `lowerCamelCase`, MaxLen: 20},
 }
 
+type FuncConfigT struct {
+	Param  int
+	Result int
+}
+
+var FuncConfig = FuncConfigT{
+	Param:  5,
+	Result: 3,
+}
+
 var configValue = reflect.ValueOf(&Config).Elem()
+
+func getFuncConfig(kind string) int {
+	switch kind {
+	case `param`:
+		return FuncConfig.Param
+	case `result`:
+		return FuncConfig.Result
+	}
+	return 0
+}
 
 func getConfig(kind string, local bool, fileName string) (configT, string) {
 	switch kind {

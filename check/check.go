@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 
 	"github.com/lovego/spec/check/names"
+	"github.com/lovego/spec/check/orders"
 	"github.com/lovego/spec/check/sizes"
 )
 
@@ -37,7 +38,15 @@ func checkFile(f *ast.File, file *token.File, i int, src []string) {
 	sizes.CheckFile(f, file, src)
 
 	sizes.CheckLines(file.Name(), f, file, src)
-	ast.Walk(walker{f, file, src}, f)
+	ordersChecker := orders.NewFileChecker(file)
+	sizeChecker := sizes.NewWalker(file)
+	w := walker{
+		f: f, file: file, src: src,
+		walkers: []NodeWalker{names.NewNameWalker(file), sizeChecker, ordersChecker},
+	}
+	ast.Walk(w, f)
+	ordersChecker.Check()
+	sizeChecker.CheckFuncs()
 }
 
 func scanLines(src []byte) (lines []string) {
