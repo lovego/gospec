@@ -13,7 +13,7 @@ func Check(dir string, astFiles []*ast.File, fileSet *token.FileSet) {
 	w := walker{fileSet: fileSet}
 	for i, astFile := range astFiles {
 		if i == 0 {
-			checkIdent(astFile.Name, false, fileSet)
+			checkIdent(`package`, astFile.Name, false, fileSet)
 		}
 		checkFile(fileSet.Position(astFile.Pos()).Filename)
 		ast.Walk(w, astFile)
@@ -24,21 +24,21 @@ func checkDir(path string) {
 	if path == `.` || path == `..` || path == `/` {
 		return
 	}
-	Rules.Dir.exec(filepath.Base(path), token.Position{Filename: path})
+	Rules.Dir.Exec(``, filepath.Base(path), token.Position{Filename: path})
 }
 
 func checkFile(path string) {
-	Rules.File.exec(
+	Rules.File.Exec(``,
 		strings.TrimSuffix(strings.TrimSuffix(filepath.Base(path), `.go`), `_test`),
 		token.Position{Filename: path},
 	)
 }
 
-func checkIdent(ident *ast.Ident, local bool, fileSet *token.FileSet) {
+func checkIdent(thing string, ident *ast.Ident, local bool, fileSet *token.FileSet) {
 	if ident == nil || ident.Obj == nil {
 		return
 	}
 	if rule := getRuleForIdent(ident, local, fileSet); rule.valid() {
-		rule.exec(ident.Name, fileSet.Position(ident.Pos()))
+		rule.Exec(thing, ident.Name, fileSet.Position(ident.Pos()))
 	}
 }

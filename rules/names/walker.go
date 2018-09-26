@@ -3,6 +3,7 @@ package names
 import (
 	"go/ast"
 	"go/token"
+	"strings"
 )
 
 type walker struct {
@@ -12,12 +13,18 @@ type walker struct {
 
 func (w walker) Visit(node ast.Node) ast.Visitor {
 	switch n := node.(type) {
+	case *ast.GenDecl:
+		w.checkGenDecl(n)
 	case *ast.FuncDecl:
-		w.checkFuncDecl(n, w.file)
+		w.checkFuncDecl(n)
+	case *ast.FuncType:
+		w.checkFuncType(n)
+	case *ast.InterfaceType:
+		w.checkInterface(n)
 	case *ast.AssignStmt:
-		w.checkShortVarDecl(n, w.file)
+		w.checkShortVarDecl(n)
 	case *ast.RangeStmt:
-		w.checkRangeStmt(n, w.file)
+		w.checkRangeStmt(n)
 	case *ast.StructType:
 		w.checkStruct(n)
 	case *ast.BlockStmt:
@@ -28,101 +35,86 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 	return w
 }
 
-func (w walker) checkGenDecl(decl *ast.GenDecl, local bool) {
+func (w walker) checkGenDecl(decl *ast.GenDecl) {
 	if decl.Tok == token.IMPORT {
 		return
 	}
-	for _, spec := range decl.Specs {
-		switch s := spec.(type) {
+	for _, s := range decl.Specs {
+		switch spec := s.(type) {
 		case *ast.TypeSpec:
-			checkIdent(s.Name, local, file, ``)
+			ident := spec.Name
+			checkIdent(``, ident, w.local, w.fileSet)
 		case *ast.ValueSpec:
-			for _, ident := range s.Names {
-				checkIdent(ident, local, file, ``)
+			for _, ident := range spec.Names {
+				checkIdent(``, ident, w.local, w.fileSet)
 			}
 		}
 	}
 }
 
 func (w walker) checkFuncDecl(fun *ast.FuncDecl) {
-	checkIdent(n, w.local, w.fileSet)
-	checkFieldList(fun.Recv, true, file, `func receiver`)
-	checkFieldList(fun.Type.Params, true, file, `func param`)
-	checkFieldList(fun.Type.Results, true, file, `func result`)
-}
-
-func (w walker) checkFuncLit(fun *ast.FuncLit) {
-	checkFieldList(fun.Type.Params, true, file, `func param`)
-	checkFieldList(fun.Type.Results, true, file, `func result`)
-}
-
-func (w walker) checkShortVarDecl(as *ast.AssignStmt) {
-	if as.Tok != token.DEFINE {
+	ident := fun.Name
+	position := w.fileSet.Position(ident.Pos())
+	if fun.Recv != nil {
+		checkFieldList(`func receiver`, fun.Recv, true, w.fileSet)
+		// method ident's Obj property is nil, so cann't use checkIndent
+		Rules.Func.Exec(`method`, ident.Name, position)
 		return
 	}
-	for _, exp := range as.Lhs {
+	if strings.HasSuffix(position.Filename, "_test.go") {
+		Rules.FuncInTest.Exec(``, ident.Name, position)
+	} else {
+		Rules.Func.Exec(``, ident.Name, position)
+	}
+}
+
+func (w walker) checkFuncType(fun *ast.FuncType) {
+	checkFieldList(`func param`, fun.Params, true, w.fileSet)
+	checkFieldList(`func result`, fun.Results, true, w.fileSet)
+}
+
+func (w walker) checkInterface(ifc *ast.InterfaceType) {
+	checkFieldList(`interface method`, ifc.Methods, w.local, w.fileSet)
+}
+
+func (w walker) checkShortVarDecl(assign *ast.AssignStmt) {
+	if assign.Tok != token.DEFINE {
+		return
+	}
+	for _, exp := range assign.Lhs {
 		if ident, ok := exp.(*ast.Ident); ok {
-			checkIdent(ident, true, file, ``)
+			checkIdent(``, ident, true, w.fileSet)
 		}
 	}
 }
 
-func (w walker) checkRangeStmt(rg *ast.RangeStmt) {
-	if rg.Tok != token.DEFINE {
+func (w walker) checkRangeStmt(rang *ast.RangeStmt) {
+	if rang.Tok != token.DEFINE {
 		return
 	}
-	if ident, ok := rg.Key.(*ast.Ident); ok {
-		checkIdent(ident, true, file, `range var`)
+	if ident, ok := rang.Key.(*ast.Ident); ok {
+		checkIdent(`range var`, ident, true, w.fileSet)
 	}
-	if ident, ok := rg.Value.(*ast.Ident); ok {
-		checkIdent(ident, true, file, `range var`)
+	if ident, ok := rang.Value.(*ast.Ident); ok {
+		checkIdent(`range var`, ident, true, w.fileSet)
 	}
 }
 
-func (w walker) checkInterface(itfc *ast.InterfaceType, local bool) {
-	checkFieldList(itfc.Methods, local, file, `interface method`)
+func (w walker) checkStruct(strut *ast.StructType) {
+	for _, f := range strut.Fields.List {
+		for _, ident := range f.Names {
+			Rules.StructField.Exec(`struct field`, ident.Name, w.fileSet.Position(ident.Pos()))
+		}
+	}
 }
 
-func (w walker) checkStruct(st *ast.StructType, local bool) {
-	checkFieldList(st.Fields, local, file, `struct field`)
-}
-
-func (w walker) checkFieldList(fl *ast.FieldList, local bool, thing string) {
+func checkFieldList(thing string, fl *ast.FieldList, local bool, fileSet *token.FileSet) {
 	if fl == nil {
 		return
 	}
 	for _, f := range fl.List {
 		for _, ident := range f.Names {
-			checkIdent(ident, local, file, thing)
+			checkIdent(thing, ident, local, fileSet)
 		}
-		if ft, ok := f.Type.(*ast.FuncType); ok {
-			checkFieldList(ft.Params, true, file, thing+` param`)
-			checkFieldList(ft.Results, true, file, thing+` result`)
-		}
-	}
-}
-
-func (w walker) checkStruct(st *ast.StructType) {
-	for _, f := range st.Fields.List {
-		for _, ident := range f.Names {
-			Rules.StructField.exec(ident.Name, w.fileSet.Position(ident.Pos()))
-		}
-	}
-}
-
-func (w walker) checkIdent(ident *ast.Ident, local bool, thing string) {
-	if ident == nil || ident.Obj == nil {
-		return
-	}
-	kind := ident.Obj.Kind.String()
-	cfg, rule := getConfig(kind, local, file.Name())
-	if cfg.Style == `` {
-		return
-	}
-
-	if desc := checkName(ident.Name, cfg, false); desc != `` {
-		problems.Add(file.Position(ident.Pos()),
-			fmt.Sprintf(`%s name %s %s`, getThing(thing, local, kind), ident.Name, desc), rule,
-		)
 	}
 }

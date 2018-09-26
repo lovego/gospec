@@ -19,17 +19,21 @@ var hasUppercaseOrUnderscore = regexp.MustCompile(`[A-Z_]+`)
 var exampleTestCase = regexp.MustCompile(`^Example[_A-Z]`)
 
 type rule struct {
-	Name   string
 	Style  string
 	MaxLen int
+	Key    string
+	Desc   string
 }
 
-func (r *rule) exec(name string, pos token.Position) {
+func (r *rule) Exec(thing, name string, pos token.Position) {
 	desc := r.check(name, false)
 	if desc == `` {
 		return
 	}
-	problems.Add(pos, fmt.Sprintf("%s name %s %s", r.Name, name, desc), "names."+r.Name)
+	if thing == "" {
+		thing = r.Desc
+	}
+	problems.Add(pos, fmt.Sprintf("%s name %s %s", thing, name, desc), "names."+r.Key)
 }
 
 func (r *rule) check(name string, loose bool) string {
@@ -70,5 +74,5 @@ func (r *rule) checkStyle(name string, loose bool) bool {
 }
 
 func (r *rule) valid() bool {
-	return r.Name != ""
+	return r.Key != ""
 }
