@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type rules struct {
+type RulesT struct {
 	Dir, File                       rule
 	Pkg, Func, FuncInTest, Label    rule
 	Const, Var, Type                rule
@@ -15,7 +15,7 @@ type rules struct {
 	StructField                     rule
 }
 
-var Rules = rules{
+var Rules = RulesT{
 	Dir:  rule{Style: `lower_case`, MaxLen: 20},
 	File: rule{Style: `lower_case`, MaxLen: 20},
 

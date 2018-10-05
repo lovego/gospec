@@ -7,45 +7,39 @@ import (
 	"path"
 
 	"github.com/lovego/gospec/rules/names"
-	"github.com/lovego/gospec/rules/orders"
 	"github.com/lovego/gospec/rules/sizes"
 )
 
 func init() {
-	parseConfig()
+	loadConfig()
 }
 
-// parse config from file
-func parseConfig() {
-	p := configFilePath()
+func loadConfig() {
+	p := getConfigPath()
 	if p == `` {
 		return
 	}
 	if content, err := ioutil.ReadFile(p); err == nil {
-		parseConfigContent(content)
+		parseConfig(content)
 	} else {
 		panic(err)
 	}
 }
 
-func parseConfigContent(content []byte) {
+func parseConfig(content []byte) {
 	var config = &struct {
-		Sizes  *sizes.ConfigT
-		Names  *names.ConfigT
-		Funcs  *names.FuncConfigT
-		Orders *orders.OrdersConfigT
+		Sizes *sizes.RulesT
+		Names *names.RulesT
 	}{
-		Sizes:  &sizes.Config,
-		Names:  &names.Config,
-		Funcs:  &names.FuncConfig,
-		Orders: &orders.Config,
+		Sizes: &sizes.Rules,
+		Names: &names.Rules,
 	}
 	if err := json.Unmarshal(content, config); err != nil {
 		panic(err)
 	}
 }
 
-func configFilePath() string {
+func getConfigPath() string {
 	dir, err := os.Getwd()
 	if err != nil {
 		panic(err)

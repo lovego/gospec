@@ -42,7 +42,7 @@ func (r *rule) check(name string, loose bool) string {
 	}
 	desc := []string{}
 	if len(name) > r.MaxLen {
-		desc = append(desc, fmt.Sprintf(`%d chars long, limits %d`, len(name), r.MaxLen))
+		desc = append(desc, fmt.Sprintf(`%d chars long, limit: %d`, len(name), r.MaxLen))
 	}
 	if !r.checkStyle(name, loose) {
 		desc = append(desc, fmt.Sprintf(`should be %s style`, r.Style))
