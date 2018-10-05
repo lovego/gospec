@@ -8,23 +8,22 @@ import (
 )
 
 type RulesT struct {
-	Dir, File                       rule
-	Pkg, Func, FuncInTest, Label    rule
-	Const, Var, Type                rule
-	LocalConst, LocalVar, LocalType rule
-	StructField                     rule
+	Dir, Pkg, File                         rule
+	Func, FuncInTest, StructField          rule
+	Const, Var, Type                       rule
+	LocalConst, LocalVar, LocalType, Label rule
 }
 
 var Rules = RulesT{
 	Dir:  rule{Style: `lower_case`, MaxLen: 20},
 	File: rule{Style: `lower_case`, MaxLen: 20},
 
-	StructField: rule{Style: `camelCase`, MaxLen: 30},
+	Func:        rule{Style: `camelCase`, MaxLen: 30},
 	FuncInTest:  rule{Style: `camelCaseInTest`, MaxLen: 50},
+	StructField: rule{Style: `camelCase`, MaxLen: 30},
 
 	// rule for ast.Ident
-	Pkg:  rule{Style: `lower_case`, MaxLen: 20},
-	Func: rule{Style: `camelCase`, MaxLen: 30},
+	Pkg: rule{Style: `lower_case`, MaxLen: 20},
 
 	Const: rule{Style: `camelCase`, MaxLen: 30},
 	Var:   rule{Style: `camelCase`, MaxLen: 40},
@@ -51,8 +50,6 @@ func getRuleForIdent(ident *ast.Ident, local bool, fileSet *token.FileSet) rule 
 	switch ident.Obj.Kind {
 	case ast.Pkg:
 		return Rules.Pkg
-	case ast.Fun:
-		return Rules.Func
 	case ast.Lbl:
 		return Rules.Label
 	}

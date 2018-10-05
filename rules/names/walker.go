@@ -13,10 +13,12 @@ type walker struct {
 
 func (w walker) Visit(node ast.Node) ast.Visitor {
 	switch n := node.(type) {
-	case *ast.GenDecl:
-		w.checkGenDecl(n)
 	case *ast.FuncDecl:
 		w.checkFuncDecl(n)
+	case *ast.StructType:
+		w.checkStruct(n)
+	case *ast.GenDecl:
+		w.checkGenDecl(n)
 	case *ast.FuncType:
 		w.checkFuncType(n)
 	case *ast.InterfaceType:
@@ -25,14 +27,36 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 		w.checkShortVarDecl(n)
 	case *ast.RangeStmt:
 		w.checkRangeStmt(n)
-	case *ast.StructType:
-		w.checkStruct(n)
 	case *ast.BlockStmt:
 		if !w.local {
 			return walker{local: true, fileSet: w.fileSet}
 		}
 	}
 	return w
+}
+
+func (w walker) checkFuncDecl(fun *ast.FuncDecl) {
+	ident := fun.Name
+	position := w.fileSet.Position(ident.Pos())
+	if fun.Recv != nil {
+		checkFieldList(`func receiver`, fun.Recv, true, w.fileSet)
+		// method ident's Obj property is nil, so cann't use checkIndent
+		Rules.Func.Exec(`method`, ident.Name, position)
+		return
+	}
+	if strings.HasSuffix(position.Filename, "_test.go") {
+		Rules.FuncInTest.Exec(``, ident.Name, position)
+	} else {
+		Rules.Func.Exec(``, ident.Name, position)
+	}
+}
+
+func (w walker) checkStruct(strut *ast.StructType) {
+	for _, f := range strut.Fields.List {
+		for _, ident := range f.Names {
+			Rules.StructField.Exec(`struct field`, ident.Name, w.fileSet.Position(ident.Pos()))
+		}
+	}
 }
 
 func (w walker) checkGenDecl(decl *ast.GenDecl) {
@@ -49,22 +73,6 @@ func (w walker) checkGenDecl(decl *ast.GenDecl) {
 				checkIdent(``, ident, w.local, w.fileSet)
 			}
 		}
-	}
-}
-
-func (w walker) checkFuncDecl(fun *ast.FuncDecl) {
-	ident := fun.Name
-	position := w.fileSet.Position(ident.Pos())
-	if fun.Recv != nil {
-		checkFieldList(`func receiver`, fun.Recv, true, w.fileSet)
-		// method ident's Obj property is nil, so cann't use checkIndent
-		Rules.Func.Exec(`method`, ident.Name, position)
-		return
-	}
-	if strings.HasSuffix(position.Filename, "_test.go") {
-		Rules.FuncInTest.Exec(``, ident.Name, position)
-	} else {
-		Rules.Func.Exec(``, ident.Name, position)
 	}
 }
 
@@ -97,14 +105,6 @@ func (w walker) checkRangeStmt(rang *ast.RangeStmt) {
 	}
 	if ident, ok := rang.Value.(*ast.Ident); ok {
 		checkIdent(`range var`, ident, true, w.fileSet)
-	}
-}
-
-func (w walker) checkStruct(strut *ast.StructType) {
-	for _, f := range strut.Fields.List {
-		for _, ident := range f.Names {
-			Rules.StructField.Exec(`struct field`, ident.Name, w.fileSet.Position(ident.Pos()))
-		}
 	}
 }
 

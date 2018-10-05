@@ -1,0 +1,21 @@
+names:
+  dir:  { maxLen: 20, style: lower_case }
+  pkg:  { maxLen: 20, style: lower_case }
+  file: { maxLen: 20, style: lower_case }
+
+  func:        { maxLen: 30, style: camelCase       }
+  funcInTest:  { maxLen: 50, style: camelCaseInTest }
+  structField: { maxLen: 30, Style: camelCase       }
+
+  type:  { maxLen: 30, style: camelCase       }
+  const: { maxLen: 30, style: camelCase       }
+  var:   { maxLen: 40, style: camelCase       }
+
+  localType:  { maxLen: 20, style: lowerCamelCase  }
+  localConst: { maxLen: 20, style: lowerCamelCase  }
+  localVar:   { maxLen: 30, style: lowerCamelCase  }
+  label:      { maxLen: 20, style: lowerCamelCase  }
+sizes: {
+  dir: 20, file: 300, testFile: 600, line: 120,
+  func: 30, params: 5, results: 3
+}

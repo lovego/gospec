@@ -1,13 +1,13 @@
 package rules
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path"
 
 	"github.com/lovego/gospec/rules/names"
 	"github.com/lovego/gospec/rules/sizes"
+	"gopkg.in/yaml.v2"
 )
 
 func init() {
@@ -34,7 +34,7 @@ func parseConfig(content []byte) {
 		Sizes: &sizes.Rules,
 		Names: &names.Rules,
 	}
-	if err := json.Unmarshal(content, config); err != nil {
+	if err := yaml.Unmarshal(content, config); err != nil {
 		panic(err)
 	}
 }
@@ -56,8 +56,7 @@ func getConfigPath() string {
 }
 
 func testConfig(dir string) string {
-	const file = `gospec.json`
-	p := path.Join(dir, file)
+	p := path.Join(dir, `.gospec.yml`)
 	if _, err := os.Stat(p); err == nil {
 		return p
 	} else if os.IsNotExist(err) {

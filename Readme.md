@@ -4,8 +4,8 @@ a configurable golang coding spec checker.
 ## Features
 ##### size check
 1. dir max entries count check.
-2. line max width(chars) check.
-3. file max lines count check (ignore comment lines).
+2. file max lines count check.
+3. line max width(chars) check.
 4. function max statements count check.
 ##### name check
 1. dir name, file name, package name check.
@@ -18,7 +18,7 @@ a configurable golang coding spec checker.
 ## Usage
     gospec [ <dir>/ | <dir> | <file> ] ...
 - dir with trailing "/" means check all the packages in dir and it&apos;s subdir.
-- dir without trailing "/" means check only the package in dir, not include it&apos;s subdir.
+- dir without trailing "/" means check only the package in dir, not including it&apos;s subdir.
 - file means check only the file.
 
 exmaple:
@@ -42,6 +42,6 @@ ubuntu@ubuntu:~/go/src/github.com/lovego/my_project$ gospec services/
 ```
 
 ## Config File
-gospec find the config file named "gospec.json" from current working directory upwards.
-It use the first one it find. If none is found, it uses the <a href="gospec.json">default config</a>.
+gospec find the config file named ".gospec.yml" from current working directory upwards.
+It use the first one it find. If none is found, it uses the <a href=".gospec.yml">default config</a>.
 
