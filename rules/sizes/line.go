@@ -1,7 +1,6 @@
 package sizes
 
 import (
-	"bufio"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -11,9 +10,7 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func checkLines(src string, astFile *ast.File, fileSet *token.FileSet) {
-	filename := fileSet.Position(astFile.Pos()).Filename
-	lines := scanLines(src)
+func checkLines(filename string, lines []string, astFile *ast.File, fileSet *token.FileSet) {
 	for i, line := range lines {
 		lineNum := i + 1
 		width := runewidth.StringWidth(line)
@@ -25,17 +22,6 @@ func checkLines(src string, astFile *ast.File, fileSet *token.FileSet) {
 			)
 		}
 	}
-}
-
-func scanLines(src string) (lines []string) {
-	scanner := bufio.NewScanner(strings.NewReader(src))
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-	return
 }
 
 func isComment(lines []string, lineNum int, astFile *ast.File, fileSet *token.FileSet) bool {

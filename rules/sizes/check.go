@@ -1,8 +1,10 @@
 package sizes
 
 import (
+	"bufio"
 	"go/ast"
 	"go/token"
+	"strings"
 )
 
 var Rules = RulesT{
@@ -11,15 +13,29 @@ var Rules = RulesT{
 }
 
 type RulesT struct {
-	Dir, File, TestFile, Line, Func, Params, Results int
+	Dir, File, TestFile, Line int
+	Func, Params, Results     int
 }
 
 func Check(dir string, astFiles []*ast.File, sources []string, fileSet *token.FileSet) {
 	checkDir(dir)
 	w := walker{fileSet: fileSet}
 	for i, astFile := range astFiles {
-		checkFile(astFile, fileSet)
-		checkLines(sources[i], astFile, fileSet)
+		filename := fileSet.Position(astFile.Pos()).Filename
+		lines := scanLines(sources[i])
+		checkFile(filename, lines)
+		checkLines(filename, lines, astFile, fileSet)
 		ast.Walk(w, astFile)
 	}
+}
+
+func scanLines(src string) (lines []string) {
+	scanner := bufio.NewScanner(strings.NewReader(src))
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+	return
 }

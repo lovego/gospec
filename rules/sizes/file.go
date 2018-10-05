@@ -2,7 +2,6 @@ package sizes
 
 import (
 	"fmt"
-	"go/ast"
 	"go/token"
 	"path/filepath"
 	"strings"
@@ -10,17 +9,15 @@ import (
 	"github.com/lovego/gospec/problems"
 )
 
-func checkFile(astFile *ast.File, fileSet *token.FileSet) {
+func checkFile(filename string, lines []string) {
 	limit := Rules.File
-	filename := fileSet.Position(astFile.Pos()).Filename
 
 	isTest := strings.HasSuffix(filename, "_test.go")
 	if isTest {
 		limit = Rules.TestFile
 	}
 
-	num := stmtsNum(astFile)
-	if num <= limit {
+	if len(lines) <= limit {
 		return
 	}
 
@@ -31,7 +28,9 @@ func checkFile(astFile *ast.File, fileSet *token.FileSet) {
 
 	problems.Add(
 		token.Position{Filename: filename},
-		fmt.Sprintf(`file %s size: %d statements, limit: %d`, filepath.Base(filename), num, limit),
+		fmt.Sprintf(
+			`file %s size: %d statements, limit: %d`, filepath.Base(filename), len(lines), limit,
+		),
 		rule,
 	)
 }
