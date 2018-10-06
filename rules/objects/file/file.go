@@ -1,4 +1,4 @@
-package file
+package filepkg
 
 import (
 	"bufio"
@@ -28,12 +28,12 @@ type sizeRule struct {
 	TestMaxLines uint `yaml:"testMaxLines"`
 }
 
-func Check(path string, src string, astFile *ast.File, fileSet *token.FileSet) {
+func Check(path string, src string, isTest bool, astFile *ast.File, fileSet *token.FileSet) {
 	name := filepath.Base(path)
 	checkName(name, path)
 
 	lines := scanLines(src)
-	checkSize(name, path, uint(len(lines)))
+	checkSize(name, path, isTest, uint(len(lines)))
 	checkLineSize(path, lines, astFile, fileSet)
 }
 
@@ -44,10 +44,8 @@ func checkName(name, path string) {
 	)
 }
 
-func checkSize(name, path string, lineCount uint) {
+func checkSize(name, path string, isTest bool, lineCount uint) {
 	limit := Rule.Size.MaxLines
-
-	isTest := strings.HasSuffix(name, "_test.go")
 	if isTest {
 		limit = Rule.Size.TestMaxLines
 	}

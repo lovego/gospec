@@ -1,4 +1,4 @@
-package names
+package rules
 
 import (
 	"fmt"

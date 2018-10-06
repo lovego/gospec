@@ -1,16 +1,15 @@
-package fun
+package funcpkg
 
 import (
 	"fmt"
 	"go/ast"
 	"go/token"
-	"strings"
 
 	"github.com/lovego/gospec/problems"
 )
 
-func checkFuncType(thing string, typ *ast.FuncType, fileSet *token.FileSet) {
-	rule, ruleName := getSizeRule(typ.Func, fileSet)
+func checkTypeSize(thing string, typ *ast.FuncType, isTest bool, fileSet *token.FileSet) {
+	rule, ruleName := getSizeRule(isTest)
 
 	if typ.Params != nil && uint(typ.Params.NumFields()) > rule.MaxParams {
 		problems.Add(
@@ -29,8 +28,8 @@ func checkFuncType(thing string, typ *ast.FuncType, fileSet *token.FileSet) {
 	}
 }
 
-func checkFuncBody(thing string, body *ast.BlockStmt, fileSet *token.FileSet) {
-	rule, ruleName := getSizeRule(body.Pos(), fileSet)
+func checkBodySize(thing string, body *ast.BlockStmt, isTest bool, fileSet *token.FileSet) {
+	rule, ruleName := getSizeRule(isTest)
 
 	if size := stmtsCount(body); size > rule.MaxStatements {
 		problems.Add(
@@ -41,8 +40,8 @@ func checkFuncBody(thing string, body *ast.BlockStmt, fileSet *token.FileSet) {
 	}
 }
 
-func getSizeRule(pos token.Pos, fileSet *token.FileSet) (sizeRule, string) {
-	if strings.HasSuffix(fileSet.Position(pos).Filename, "_test.go") {
+func getSizeRule(isTest bool) (sizeRule, string) {
+	if isTest {
 		return RuleInTest.Size, "funcInTest.size"
 	} else {
 		return Rule.Size, "func.size"

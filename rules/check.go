@@ -5,11 +5,18 @@ import (
 	"go/parser"
 	"go/token"
 	"io/ioutil"
+	"strings"
 
 	dirPkg "github.com/lovego/gospec/rules/objects/dir"
 	filePkg "github.com/lovego/gospec/rules/objects/file"
-	funPkg "github.com/lovego/gospec/rules/objects/fun"
-	pkgPkg "github.com/lovego/gospec/rules/objects/pkg"
+	funcPkg "github.com/lovego/gospec/rules/objects/func"
+	structPkg "github.com/lovego/gospec/rules/objects/struct"
+
+	constPkg "github.com/lovego/gospec/rules/objects/names/const"
+	labelPkg "github.com/lovego/gospec/rules/objects/names/label"
+	pkgPkg "github.com/lovego/gospec/rules/objects/names/pkg"
+	typePkg "github.com/lovego/gospec/rules/objects/names/type"
+	varPkg "github.com/lovego/gospec/rules/objects/names/var"
 )
 
 func Check(dir string, files []string) {
@@ -17,7 +24,6 @@ func Check(dir string, files []string) {
 
 	fileSet := token.NewFileSet()
 	packages := make(map[string]bool)
-	w := walker{fileSet: fileSet}
 	for _, path := range files {
 		src, astFile := loadFile(path, fileSet)
 
@@ -26,39 +32,33 @@ func Check(dir string, files []string) {
 			packages[astFile.Name.Name] = true
 		}
 
-		filePkg.Check(path, src, astFile, fileSet)
-		ast.Walk(w, astFile)
+		isTest := strings.HasSuffix(path, "_test.go")
+
+		filePkg.Check(path, src, isTest, astFile, fileSet)
+
+		ast.Walk(walker{isTest: isTest, fileSet: fileSet}, astFile)
 	}
 }
 
 type walker struct {
-	local   bool
-	fileSet *token.FileSet
+	isTest, isLocal bool
+	fileSet         *token.FileSet
 }
 
 func (w walker) Visit(node ast.Node) ast.Visitor {
 	if node == nil {
 		return w
 	}
-	funPkg.Check(node, w.fileSet)
+	funcPkg.Check(node, w.isTest, w.fileSet)
+	structPkg.Check(node, w.fileSet)
 
-	/*
-		switch n := node.(type) {
-		case *ast.StructType:
-			w.checkStruct(n)
-		case *ast.GenDecl:
-			w.checkGenDecl(n)
-		case *ast.InterfaceType:
-			w.checkInterface(n)
-		case *ast.AssignStmt:
-			w.checkShortVarDecl(n)
-		case *ast.RangeStmt:
-			w.checkRangeStmt(n)
-		}
-	*/
+	constPkg.Check(node, w.isLocal, w.fileSet)
+	varPkg.Check(node, w.isLocal, w.fileSet)
+	typePkg.Check(node, w.isLocal, w.fileSet)
+	labelPkg.Check(node, w.fileSet)
 
-	if _, ok := node.(*ast.BlockStmt); ok && !w.local {
-		return walker{local: true, fileSet: w.fileSet}
+	if _, ok := node.(*ast.BlockStmt); ok && !w.isLocal {
+		return walker{isTest: w.isTest, fileSet: w.fileSet, isLocal: true}
 	}
 	return w
 }
