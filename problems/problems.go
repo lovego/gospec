@@ -35,6 +35,10 @@ func Count() uint {
 	return count
 }
 
+func Clear() {
+	table = newTable()
+}
+
 func newTable() *tablewriter.Table {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoFormatHeaders(false)

@@ -15,12 +15,12 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 	switch n := node.(type) {
 	case *ast.FuncDecl:
 		w.checkFuncDecl(n)
+	case *ast.FuncType:
+		w.checkFuncType(n)
 	case *ast.StructType:
 		w.checkStruct(n)
 	case *ast.GenDecl:
 		w.checkGenDecl(n)
-	case *ast.FuncType:
-		w.checkFuncType(n)
 	case *ast.InterfaceType:
 		w.checkInterface(n)
 	case *ast.AssignStmt:

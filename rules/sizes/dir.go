@@ -18,9 +18,9 @@ func checkDir(dir string) {
 		return
 	}
 	problems.Add(
-		token.Position{Filename: dir}, fmt.Sprintf(
-			`dir %s size: %d entries, limit: %d`, filepath.Base(dir), count, Rules.Dir,
-		), `sizes.dir`,
+		token.Position{Filename: dir},
+		fmt.Sprintf(`dir %s size: %d entries, limit: %d`, filepath.Base(dir), count, Rules.Dir),
+		`sizes.dir`,
 	)
 }
 
@@ -31,9 +31,15 @@ func entriesCount(dir string) int {
 	}
 	defer f.Close()
 
-	if names, err := f.Readdirnames(-1); err != nil {
+	names, err := f.Readdirnames(-1)
+	if err != nil {
 		panic(err)
-	} else {
-		return len(names)
 	}
+	var count int
+	for _, name := range names {
+		if name[0] != '.' {
+			count++
+		}
+	}
+	return count
 }

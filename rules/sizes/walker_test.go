@@ -6,7 +6,7 @@ import (
 	"go/token"
 )
 
-func ExampleStmtsNum() {
+func ExampleStmtsCount() {
 	var src = `package example
 
 func function() {
@@ -26,7 +26,7 @@ label:            // 4
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(stmtsNum(file))
+	fmt.Println(stmtsCount(file))
 
 	// Output: 7
 }

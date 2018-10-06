@@ -39,7 +39,7 @@ func (w walker) checkFunc(name string, typ *ast.FuncType, body *ast.BlockStmt) {
 		)
 	}
 
-	if size := stmtsNum(body); size > Rules.Func {
+	if size := stmtsCount(body); size > Rules.Func {
 		problems.Add(
 			w.fileSet.Position(typ.Params.Pos()),
 			fmt.Sprintf(`%s body size: %d statements, limit: %d`, name, size, Rules.Func),
@@ -48,7 +48,7 @@ func (w walker) checkFunc(name string, typ *ast.FuncType, body *ast.BlockStmt) {
 	}
 }
 
-func stmtsNum(node ast.Node) int {
+func stmtsCount(node ast.Node) int {
 	w := &stmtsWalker{}
 	ast.Walk(w, node)
 	return w.count
