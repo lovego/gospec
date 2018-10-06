@@ -8,15 +8,12 @@ import (
 )
 
 type RulesT struct {
-	Dir, Pkg, File                         rule
 	Func, FuncInTest, StructField          rule
 	Const, Var, Type                       rule
 	LocalConst, LocalVar, LocalType, Label rule
 }
 
 var Rules = RulesT{
-	Dir:  rule{Style: `lower_case`, MaxLen: 20},
-	File: rule{Style: `lower_case`, MaxLen: 20},
 
 	Func:        rule{Style: `camelCase`, MaxLen: 30},
 	FuncInTest:  rule{Style: `camelCaseInTest`, MaxLen: 50},

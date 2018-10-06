@@ -28,7 +28,9 @@ func Add(position token.Position, desc, rule string) {
 }
 
 func Render() {
-	table.Render()
+	if count > 0 {
+		table.Render()
+	}
 }
 
 func Count() uint {
@@ -36,6 +38,7 @@ func Count() uint {
 }
 
 func Clear() {
+	count = 0
 	table = newTable()
 }
 

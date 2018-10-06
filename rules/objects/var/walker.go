@@ -35,22 +35,6 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 	return w
 }
 
-func (w walker) checkFuncDecl(fun *ast.FuncDecl) {
-	ident := fun.Name
-	position := w.fileSet.Position(ident.Pos())
-	if fun.Recv != nil {
-		checkFieldList(`func receiver`, fun.Recv, true, w.fileSet)
-		// method ident's Obj property is nil, so cann't use checkIndent
-		Rules.Func.Exec(`method`, ident.Name, position)
-		return
-	}
-	if strings.HasSuffix(position.Filename, "_test.go") {
-		Rules.FuncInTest.Exec(``, ident.Name, position)
-	} else {
-		Rules.Func.Exec(``, ident.Name, position)
-	}
-}
-
 func (w walker) checkStruct(strut *ast.StructType) {
 	for _, f := range strut.Fields.List {
 		for _, ident := range f.Names {

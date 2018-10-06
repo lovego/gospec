@@ -1,4 +1,4 @@
-package sizes
+package fun
 
 import (
 	"fmt"
