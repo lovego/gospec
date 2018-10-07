@@ -16,14 +16,14 @@ var LocalRule = name.Rule{
 	Style:  "lowerCamelCase",
 }
 
-func Check(node ast.Node, local bool, fileSet *token.FileSet) {
+func Check(local bool, node ast.Node, fileSet *token.FileSet) {
 	switch typ := node.(type) {
 	case *ast.TypeSpec:
-		checkType(typ, local, fileSet)
+		checkType(local, typ, fileSet)
 	}
 }
 
-func checkType(typ *ast.TypeSpec, local bool, fileSet *token.FileSet) {
+func checkType(local bool, typ *ast.TypeSpec, fileSet *token.FileSet) {
 	ident := typ.Name
 	if local {
 		LocalRule.Exec(ident.Name, `local type`, `localType`, fileSet.Position(ident.Pos()))

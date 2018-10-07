@@ -16,14 +16,14 @@ var LocalRule = name.Rule{
 	Style:  "lowerCamelCase",
 }
 
-func Check(node ast.Node, local bool, fileSet *token.FileSet) {
+func Check(local bool, node ast.Node, fileSet *token.FileSet) {
 	switch con := node.(type) {
 	case *ast.ValueSpec:
-		checkConst(con, local, fileSet)
+		checkConst(local, con, fileSet)
 	}
 }
 
-func checkConst(con *ast.ValueSpec, local bool, fileSet *token.FileSet) {
+func checkConst(local bool, con *ast.ValueSpec, fileSet *token.FileSet) {
 	if con.Names[0].Obj.Kind != ast.Con {
 		return
 	}

@@ -34,7 +34,7 @@ func Check(dir string, files []string) {
 
 		isTest := strings.HasSuffix(path, "_test.go")
 
-		filePkg.Check(path, src, isTest, astFile, fileSet)
+		filePkg.Check(isTest, path, src, astFile, fileSet)
 
 		ast.Walk(walker{isTest: isTest, fileSet: fileSet}, astFile)
 	}
@@ -49,12 +49,12 @@ func (w walker) Visit(node ast.Node) ast.Visitor {
 	if node == nil {
 		return w
 	}
-	funcPkg.Check(node, w.isTest, w.fileSet)
+	funcPkg.Check(w.isTest, node, w.fileSet)
 	structPkg.Check(node, w.fileSet)
 
-	constPkg.Check(node, w.isLocal, w.fileSet)
-	varPkg.Check(node, w.isLocal, w.fileSet)
-	typePkg.Check(node, w.isLocal, w.fileSet)
+	constPkg.Check(w.isLocal, node, w.fileSet)
+	varPkg.Check(w.isLocal, node, w.fileSet)
+	typePkg.Check(w.isLocal, node, w.fileSet)
 	labelPkg.Check(node, w.fileSet)
 
 	if _, ok := node.(*ast.BlockStmt); ok && !w.isLocal {

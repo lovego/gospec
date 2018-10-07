@@ -24,6 +24,9 @@ type sizeRule struct {
 }
 
 func Check(path string) {
+	if path == "" {
+		return
+	}
 	name := filepath.Base(path)
 	checkName(name, path)
 	checkSize(name, path)

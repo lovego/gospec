@@ -10,15 +10,15 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func checkLineSize(filename string, lines []string, astFile *ast.File, fileSet *token.FileSet) {
+func (r *RuleT) checkLineWidth(lines []string, path string, astFile *ast.File, fileSet *token.FileSet) {
 	for i, line := range lines {
 		lineNum := i + 1
 		width := uint(runewidth.StringWidth(line))
-		if width > Rule.Size.MaxLine && !isComment(lines, lineNum, astFile, fileSet) {
+		if width > r.Size.MaxLineWidth && !isComment(lines, lineNum, astFile, fileSet) {
 			problems.Add(
-				token.Position{Filename: filename, Line: lineNum},
-				fmt.Sprintf(`line %d size: %d chars wide, limit: %d`, lineNum, width, Rule.Size.MaxLine),
-				`sizes.line`,
+				token.Position{Filename: path, Line: lineNum},
+				fmt.Sprintf(`line %d size: %d chars wide, limit: %d`, lineNum, width, r.Size.MaxLineWidth),
+				r.key+`.size.maxLineWidth`,
 			)
 		}
 	}

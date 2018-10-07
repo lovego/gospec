@@ -16,10 +16,10 @@ var LocalRule = name.Rule{
 	Style:  "lowerCamelCase",
 }
 
-func Check(node ast.Node, local bool, fileSet *token.FileSet) {
+func Check(local bool, node ast.Node, fileSet *token.FileSet) {
 	switch n := node.(type) {
 	case *ast.ValueSpec:
-		checkVarDecl(n, local, fileSet)
+		checkVarDecl(local, n, fileSet)
 		return
 	case *ast.FuncType:
 		checkFuncType(n, fileSet)
@@ -35,7 +35,7 @@ func Check(node ast.Node, local bool, fileSet *token.FileSet) {
 	}
 }
 
-func checkVarDecl(vars *ast.ValueSpec, local bool, fileSet *token.FileSet) {
+func checkVarDecl(local bool, vars *ast.ValueSpec, fileSet *token.FileSet) {
 	if vars.Names[0].Obj.Kind != ast.Var {
 		return
 	}

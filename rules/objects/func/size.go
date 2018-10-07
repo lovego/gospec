@@ -8,43 +8,31 @@ import (
 	"github.com/lovego/gospec/problems"
 )
 
-func checkTypeSize(thing string, typ *ast.FuncType, isTest bool, fileSet *token.FileSet) {
-	rule, ruleName := getSizeRule(isTest)
-
-	if typ.Params != nil && uint(typ.Params.NumFields()) > rule.MaxParams {
+func (r *RuleT) checkTypeSize(thing string, typ *ast.FuncType, fileSet *token.FileSet) {
+	if typ.Params != nil && uint(typ.Params.NumFields()) > r.Size.MaxParams {
 		problems.Add(
 			fileSet.Position(typ.Params.Pos()), fmt.Sprintf(
-				`%s params size: %d, limit: %d`, thing, typ.Params.NumFields(), rule.MaxParams,
-			), ruleName+`.maxParams`,
+				`%s params size: %d, limit: %d`, thing, typ.Params.NumFields(), r.Size.MaxParams,
+			), r.key+`.size.maxParams`,
 		)
 	}
 
-	if typ.Results != nil && uint(typ.Results.NumFields()) > rule.MaxResults {
+	if typ.Results != nil && uint(typ.Results.NumFields()) > r.Size.MaxResults {
 		problems.Add(
 			fileSet.Position(typ.Results.Pos()), fmt.Sprintf(
-				`%s results size: %d, limit: %d`, thing, typ.Results.NumFields(), rule.MaxResults,
-			), ruleName+`.maxResults`,
+				`%s results size: %d, limit: %d`, thing, typ.Results.NumFields(), r.Size.MaxResults,
+			), r.key+`.size.maxResults`,
 		)
 	}
 }
 
-func checkBodySize(thing string, body *ast.BlockStmt, isTest bool, fileSet *token.FileSet) {
-	rule, ruleName := getSizeRule(isTest)
-
-	if size := stmtsCount(body); size > rule.MaxStatements {
+func (r *RuleT) checkBodySize(thing string, body *ast.BlockStmt, fileSet *token.FileSet) {
+	if size := stmtsCount(body); size > r.Size.MaxStatements {
 		problems.Add(
 			fileSet.Position(body.Pos()), fmt.Sprintf(
-				`%s body size: %d statements, limit: %d`, thing, size, rule.MaxStatements,
-			), ruleName+`.maxStatements`,
+				`%s body size: %d statements, limit: %d`, thing, size, r.Size.MaxStatements,
+			), r.key+`.size.maxStatements`,
 		)
-	}
-}
-
-func getSizeRule(isTest bool) (sizeRule, string) {
-	if isTest {
-		return RuleInTest.Size, "funcInTest.size"
-	} else {
-		return Rule.Size, "func.size"
 	}
 }
 

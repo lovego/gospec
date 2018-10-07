@@ -9,7 +9,7 @@ import (
 
 var Rule = name.Rule{
 	MaxLen: 30,
-	Style:  "camelCase",
+	Style:  "lowerCamelCase",
 }
 
 func Check(node ast.Node, fileSet *token.FileSet) {

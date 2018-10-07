@@ -20,55 +20,50 @@ import (
 	varPkg "github.com/lovego/gospec/rules/objects/names/var"
 )
 
-func init() {
-	loadConfig()
+var config = struct {
+	Dir        *dirPkg.RuleT
+	Pkg        *name.Rule
+	File       *filePkg.RuleT
+	TestFile   *filePkg.RuleT
+	Func       *funcPkg.RuleT
+	FuncInTest *funcPkg.RuleT `yaml:"funcInTest"`
+	Struct     *structPkg.RuleT
+
+	Const      *name.Rule
+	LocalConst *name.Rule `yaml:"localConst"`
+	Var        *name.Rule
+	LocalVar   *name.Rule `yaml:"localVar"`
+	Type       *name.Rule
+	LocalType  *name.Rule `yaml:"localType"`
+	Label      *name.Rule
+}{
+	Dir:        &dirPkg.Rule,
+	File:       &filePkg.Rule,
+	TestFile:   &filePkg.Rule,
+	Func:       &funcPkg.Rule,
+	FuncInTest: &funcPkg.RuleInTest,
+	Struct:     &structPkg.Rule,
+
+	Pkg:        &pkgPkg.Rule,
+	Const:      &constPkg.Rule,
+	LocalConst: &constPkg.LocalRule,
+	Var:        &varPkg.Rule,
+	LocalVar:   &varPkg.LocalRule,
+	Type:       &typePkg.Rule,
+	LocalType:  &typePkg.LocalRule,
+	Label:      &labelPkg.Rule,
 }
 
-func loadConfig() {
+func LoadConfig() {
 	p := getConfigPath()
 	if p == `` {
 		return
 	}
-	if content, err := ioutil.ReadFile(p); err == nil {
-		parseConfig(content)
-	} else {
+	content, err := ioutil.ReadFile(p)
+	if err != nil {
 		panic(err)
 	}
-}
-
-func parseConfig(content []byte) {
-	var config = &struct {
-		Dir        *dirPkg.RuleT
-		File       *filePkg.RuleT
-		Func       *funcPkg.RuleT
-		FuncInTest *funcPkg.RuleT `yaml:"funcInTest"`
-		Struct     *structPkg.RuleT
-
-		Pkg        *name.Rule
-		Const      *name.Rule
-		LocalConst *name.Rule `yaml:"localConst"`
-		Var        *name.Rule
-		LocalVar   *name.Rule `yaml:"localVar"`
-		Type       *name.Rule
-		LocalType  *name.Rule `yaml:"localType"`
-		Label      *name.Rule
-	}{
-		Dir:        &dirPkg.Rule,
-		File:       &filePkg.Rule,
-		Func:       &funcPkg.Rule,
-		FuncInTest: &funcPkg.RuleInTest,
-		Struct:     &structPkg.Rule,
-
-		Pkg:        &pkgPkg.Rule,
-		Const:      &constPkg.Rule,
-		LocalConst: &constPkg.LocalRule,
-		Var:        &varPkg.Rule,
-		LocalVar:   &varPkg.LocalRule,
-		Type:       &typePkg.Rule,
-		LocalType:  &typePkg.LocalRule,
-		Label:      &labelPkg.Rule,
-	}
-	if err := yaml.Unmarshal(content, config); err != nil {
+	if err := yaml.Unmarshal(content, &config); err != nil {
 		panic(err)
 	}
 }

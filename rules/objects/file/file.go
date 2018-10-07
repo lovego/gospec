@@ -13,58 +13,59 @@ import (
 )
 
 var Rule = RuleT{
+	key:  "file",
 	Name: name.Rule{MaxLen: 20, Style: "lower_case"},
-	Size: sizeRule{MaxLine: 120, MaxLines: 300, TestMaxLines: 600},
+	Size: sizeRule{MaxLineWidth: 120, MaxLines: 300},
+}
+
+var TestFileRule = RuleT{
+	key:  "testFile",
+	Name: name.Rule{MaxLen: 30, Style: "lower_case"},
+	Size: sizeRule{MaxLineWidth: 120, MaxLines: 600},
 }
 
 type RuleT struct {
+	key  string
 	Name name.Rule
 	Size sizeRule
 }
 
 type sizeRule struct {
-	MaxLine      uint `yaml:"maxLine"`
 	MaxLines     uint `yaml:"maxLines"`
-	TestMaxLines uint `yaml:"testMaxLines"`
+	MaxLineWidth uint `yaml:"maxLineWidth"`
 }
 
-func Check(path string, src string, isTest bool, astFile *ast.File, fileSet *token.FileSet) {
-	name := filepath.Base(path)
-	checkName(name, path)
+func Check(isTest bool, path, src string, astFile *ast.File, fileSet *token.FileSet) {
+	if isTest {
+		TestFileRule.Check(path, src, astFile, fileSet)
+	} else {
+		Rule.Check(path, src, astFile, fileSet)
+	}
+}
 
+func (r *RuleT) Check(path, src string, astFile *ast.File, fileSet *token.FileSet) {
+	filename := filepath.Base(path)
+	r.checkName(filename, path)
 	lines := scanLines(src)
-	checkSize(name, path, isTest, uint(len(lines)))
-	checkLineSize(path, lines, astFile, fileSet)
+	r.checkLines(uint(len(lines)), filename, path)
+	r.checkLineWidth(lines, path, astFile, fileSet)
 }
 
-func checkName(name, path string) {
-	Rule.Name.Exec(
-		strings.TrimSuffix(strings.TrimSuffix(name, `.go`), `_test`),
-		"file", "file.name", token.Position{Filename: path},
+func (r *RuleT) checkName(filename, path string) {
+	r.Name.Exec(
+		strings.TrimSuffix(strings.TrimSuffix(filename, `.go`), `_test`),
+		"file", r.key+".name", token.Position{Filename: path},
 	)
 }
 
-func checkSize(name, path string, isTest bool, lineCount uint) {
-	limit := Rule.Size.MaxLines
-	if isTest {
-		limit = Rule.Size.TestMaxLines
-	}
-
-	if lineCount <= limit {
+func (r RuleT) checkLines(lineCount uint, filename, path string) {
+	if lineCount <= r.Size.MaxLines {
 		return
 	}
-
-	var rule = "file.size.maxLines"
-	if isTest {
-		rule = "file.size.testMaxLines"
-	}
-
 	problems.Add(
-		token.Position{Filename: path},
-		fmt.Sprintf(
-			`file %s size: %d lines, limit: %d`, name, lineCount, limit,
-		),
-		rule,
+		token.Position{Filename: path}, fmt.Sprintf(
+			`file %s size: %d lines, limit: %d`, filename, lineCount, r.Size.MaxLines,
+		), r.key+".size.maxLines",
 	)
 }
 

@@ -15,8 +15,8 @@ var camelcase = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 var lowerCamelCase = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
 
 type Rule struct {
-	Style  string `yaml:"style"`
-	MaxLen uint   `yaml:"maxLen"`
+	MaxLen uint   `yaml:"maxLen"` // max length of a name
+	Style  string `yaml:"style"`  // style of a name
 }
 
 func (r Rule) Exec(name, thing, key string, pos token.Position) {
