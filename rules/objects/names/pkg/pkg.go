@@ -7,11 +7,22 @@ import (
 	"github.com/lovego/gospec/rules/name"
 )
 
-var Rule = name.Rule{
+var Pkg = name.Rule{
 	MaxLen: 20,
 	Style:  "lower_case",
 }
 
-func Check(name *ast.Ident, fileSet *token.FileSet) {
-	Rule.Exec(name.Name, "pkg", "pkg", fileSet.Position(name.Pos()))
+type Checker struct {
+	m map[string]bool
+}
+
+func NewChecker() Checker {
+	return Checker{m: make(map[string]bool)}
+}
+
+func (c Checker) Check(name *ast.Ident, fileSet *token.FileSet) {
+	if !c.m[name.Name] {
+		Pkg.Exec(name.Name, "pkg", "pkg", fileSet.Position(name.Pos()))
+		c.m[name.Name] = true
+	}
 }

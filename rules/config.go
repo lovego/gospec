@@ -21,31 +21,31 @@ import (
 )
 
 var config = configT{
-	Dir:        &dirPkg.Rule,
-	File:       &filePkg.Rule,
-	TestFile:   &filePkg.TestFileRule,
-	Func:       &funcPkg.Rule,
-	FuncInTest: &funcPkg.RuleInTest,
-	Struct:     &structPkg.Rule,
+	Dir:        &dirPkg.Dir,
+	File:       &filePkg.File,
+	TestFile:   &filePkg.TestFile,
+	Func:       &funcPkg.Func,
+	FuncInTest: &funcPkg.FuncInTest,
+	Struct:     &structPkg.Struct,
 
-	Pkg:        &pkgPkg.Rule,
-	Const:      &constPkg.Rule,
-	LocalConst: &constPkg.LocalRule,
-	Var:        &varPkg.Rule,
-	LocalVar:   &varPkg.LocalRule,
-	Type:       &typePkg.Rule,
-	LocalType:  &typePkg.LocalRule,
-	Label:      &labelPkg.Rule,
+	Pkg:        &pkgPkg.Pkg,
+	Const:      &constPkg.Const,
+	LocalConst: &constPkg.LocalConst,
+	Var:        &varPkg.Var,
+	LocalVar:   &varPkg.LocalVar,
+	Type:       &typePkg.Type,
+	LocalType:  &typePkg.LocalType,
+	Label:      &labelPkg.Label,
 }
 
 type configT struct {
-	Dir        *dirPkg.RuleT
+	Dir        *dirPkg.Rule
 	Pkg        *name.Rule
-	File       *filePkg.RuleT
-	TestFile   *filePkg.RuleT
-	Func       *funcPkg.RuleT
-	FuncInTest *funcPkg.RuleT `yaml:"funcInTest"`
-	Struct     *structPkg.RuleT
+	File       *filePkg.Rule
+	TestFile   *filePkg.Rule
+	Func       *funcPkg.Rule
+	FuncInTest *funcPkg.Rule `yaml:"funcInTest"`
+	Struct     *structPkg.Rule
 
 	Const      *name.Rule
 	LocalConst *name.Rule `yaml:"localConst"`
@@ -56,6 +56,7 @@ type configT struct {
 	Label      *name.Rule
 }
 
+// load config for rules
 func LoadConfig() {
 	p := getConfigPath()
 	if p == `` {
