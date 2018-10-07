@@ -1,6 +1,11 @@
 # gospec
 a configurable golang coding specification checker.
 
+[![Build Status](https://travis-ci.org/lovego/gospec.svg?branch=master)](https://travis-ci.org/lovego/gospec)
+[![Coverage Status](https://coveralls.io/repos/github/lovego/gospec/badge.svg?branch=master)](https://coveralls.io/github/lovego/gospec?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lovego/gospec)](https://goreportcard.com/report/github.com/lovego/gospec)
+[![GoDoc](https://godoc.org/github.com/lovego/gospec?status.svg)](https://godoc.org/github.com/lovego/union_find)
+
 ## Installation
     go get github.com/lovego/gospec
 

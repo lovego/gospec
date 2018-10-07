@@ -1,0 +1,10 @@
+language: go
+go:
+  - "1.8"
+  - "1.9"
+  - "1.10"
+install:
+  - go get github.com/mattn/goveralls
+script:
+  - go test -v -covermode=count -coverprofile=coverage.out . ./problems ./rules/...
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
