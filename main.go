@@ -39,7 +39,7 @@ func traverseDir(dir string) {
 		panic(err)
 	}
 	for _, d := range list {
-		if d.IsDir() && d.Name()[0] != '.' {
+		if d.IsDir() && (d.Name()[0] != '.' && d.Name()[0] != '_') {
 			traverseDir(filepath.Join(dir, d.Name()))
 		}
 	}
@@ -92,7 +92,7 @@ func processArgs() (traDirs, dirs, files []string) {
 				dirs = append(dirs, filepath.Clean(path))
 			}
 		case mode.IsRegular():
-			if willBuild(path) {
+			if willBuild(filepath.Base(path)) {
 				files = append(files, filepath.Clean(path))
 			}
 		}
@@ -101,7 +101,7 @@ func processArgs() (traDirs, dirs, files []string) {
 }
 
 func willBuild(name string) bool {
-	return filepath.Ext(name) == `.go` && filepath.Base(name)[0] != '.' && name[0] != '_'
+	return filepath.Ext(name) == `.go` && name[0] != '.' && name[0] != '_'
 }
 
 func fileMode(path string) os.FileMode {
