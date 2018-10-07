@@ -15,7 +15,7 @@ a configurable golang coding specification checker.
 - dir     means check the dir and the ".go" files in dir.
 - file    means check only the file.
 
-exmaple:
+### exmaple:
 ```
 MacBook:~/go/src/my_project$ gospec models/...
 +---------------------------------------+---------------------------------------------------+----------------------+
@@ -27,7 +27,8 @@ MacBook:~/go/src/my_project$ gospec models/...
 +---------------------------------------+---------------------------------------------------+----------------------+
 ```
 
-## Config File
-gospec find the config file named ".gospec.yml" from current working directory upwards.
-It use the first one it find. If none is found, it uses the <a href="gospec.yml">default config</a>.
+## Configuration
+gospec find the config file named ".gospec.yml" from current working directory upwards. It use the first one it find.
+
+If no one is found, it uses the <a href="gospec.yml">default configuration</a>.
 

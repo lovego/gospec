@@ -20,7 +20,25 @@ import (
 	varPkg "github.com/lovego/gospec/rules/objects/names/var"
 )
 
-var config = struct {
+var config = configT{
+	Dir:        &dirPkg.Rule,
+	File:       &filePkg.Rule,
+	TestFile:   &filePkg.TestFileRule,
+	Func:       &funcPkg.Rule,
+	FuncInTest: &funcPkg.RuleInTest,
+	Struct:     &structPkg.Rule,
+
+	Pkg:        &pkgPkg.Rule,
+	Const:      &constPkg.Rule,
+	LocalConst: &constPkg.LocalRule,
+	Var:        &varPkg.Rule,
+	LocalVar:   &varPkg.LocalRule,
+	Type:       &typePkg.Rule,
+	LocalType:  &typePkg.LocalRule,
+	Label:      &labelPkg.Rule,
+}
+
+type configT struct {
 	Dir        *dirPkg.RuleT
 	Pkg        *name.Rule
 	File       *filePkg.RuleT
@@ -36,22 +54,6 @@ var config = struct {
 	Type       *name.Rule
 	LocalType  *name.Rule `yaml:"localType"`
 	Label      *name.Rule
-}{
-	Dir:        &dirPkg.Rule,
-	File:       &filePkg.Rule,
-	TestFile:   &filePkg.Rule,
-	Func:       &funcPkg.Rule,
-	FuncInTest: &funcPkg.RuleInTest,
-	Struct:     &structPkg.Rule,
-
-	Pkg:        &pkgPkg.Rule,
-	Const:      &constPkg.Rule,
-	LocalConst: &constPkg.LocalRule,
-	Var:        &varPkg.Rule,
-	LocalVar:   &varPkg.LocalRule,
-	Type:       &typePkg.Rule,
-	LocalType:  &typePkg.LocalRule,
-	Label:      &labelPkg.Rule,
 }
 
 func LoadConfig() {

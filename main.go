@@ -12,6 +12,7 @@ import (
 
 func main() {
 	traDirs, dirs, files := processArgs()
+	rules.LoadConfig()
 	for _, dir := range traDirs {
 		traverseDir(dir)
 	}

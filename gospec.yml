@@ -1,31 +1,78 @@
+# Common Config Attribute
+
+#### maxLen ####
+# "maxLen" specify the max length of a name
+
+#### style ####
+# "style" specify the naming style of a name, the available styles are:
+# 1. "camelCase"      (camelcase letters start with a lowercase or uppercase letter)
+# 2. "lowerCamelCase" (camelcase letters start with a lowercase letter)
+# 3. "lower_case"     (lowercase letters concatenated with a underscore)
+# 4. "lower-case"     (lowercase letters concatenated with a dash)
+
 dir:
-  name: { maxLen: 20, style: lower_case }
-  size: { maxEntries: 20 }
-
+  name:
+    maxLen: 20
+    style: lower_case
+  size:
+    maxEntries: 20  # max number of entries in a dir
+pkg:
+  maxLen: 20
+  style: lower_case
 file:
-  name: { maxLen: 20, style: lower_case }
-  size: { maxLines: 300, testMaxLines: 600, maxLine: 100 }
-
+  name:
+    maxLen: 20
+    style: lower_case
+  size:
+    maxLines: 300     # max number of lines in a file
+    maxLineWidth: 100 # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
+testfile:
+  name:
+    maxLen: 50
+    style: lower_case
+  size:
+    maxLines: 600     # max number of lines in a file
+    maxLineWidth: 100 # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
 func:
-  name:       { maxLen: 30, style: camelCase }
-  size:       { maxParams: 5, maxResults: 3, maxStatements: 30 }
+  name:
+    maxLen: 30
+    style: camelCase
+  size:
+    maxParams: 5      # max number of params of a function
+    maxResults: 3     # max number of results of a function
+    maxStatements: 30 # max number of statements of a function body
 funcInTest:
-  name:       { maxLen: 30, style: camelCase }
-  size:       { maxParams: 5, maxResults: 3, maxStatements: 30 }
-
+  name:
+    maxLen: 50
+    style: camelCase
+  size:
+    maxParams: 5      # max number of params of a function
+    maxResults: 3     # max number of results of a function
+    maxStatements: 30 # max number of statements of a function body
 struct:
-  fieldName: { maxLen: 30, Style: camelCase }
-  size:      { maxFields: 100 }
-
-pkg: { maxLen: 20, style: lower_case }
-
-type:      { maxLen: 30, style: camelCase }
-localType:  { maxLen: 20, style: lowerCamelCase }
-
-const:     { maxLen: 30, style: camelCase }
-localConst: { maxLen: 20, style: lowerCamelCase }
-
-var:       { maxLen: 40, style: camelCase }
-localVar:   { maxLen: 30, style: lowerCamelCase }
-
-label: { maxLen: 20, style: lowerCamelCase }
+  name:
+    maxLen: 30
+    style: camelCase
+  size:
+    maxFields: 100   # max number of fields of a struct
+const:
+  maxLen: 30
+  style: camelCase
+localConst:
+  maxLen: 20
+  style: lowerCamelCase
+var:
+  maxLen: 40
+  style: camelCase
+localVar:
+  maxLen: 30
+  style: lowerCamelCase
+type:
+  maxLen: 30
+  style: camelCase
+localType:
+  maxLen: 20
+  style: lowerCamelCase
+label:
+  maxLen: 30
+  style: lowerCamelCase

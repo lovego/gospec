@@ -15,13 +15,13 @@ import (
 var Rule = RuleT{
 	key:  "file",
 	Name: name.Rule{MaxLen: 20, Style: "lower_case"},
-	Size: sizeRule{MaxLineWidth: 120, MaxLines: 300},
+	Size: sizeRule{MaxLineWidth: 100, MaxLines: 300},
 }
 
 var TestFileRule = RuleT{
 	key:  "testFile",
-	Name: name.Rule{MaxLen: 30, Style: "lower_case"},
-	Size: sizeRule{MaxLineWidth: 120, MaxLines: 600},
+	Name: name.Rule{MaxLen: 50, Style: "lower_case"},
+	Size: sizeRule{MaxLineWidth: 100, MaxLines: 600},
 }
 
 type RuleT struct {
