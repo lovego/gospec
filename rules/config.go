@@ -5,7 +5,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/lovego/gospec/rules/name"
 	"gopkg.in/yaml.v2"
 
 	dirPkg "github.com/lovego/gospec/rules/objects/dir"
@@ -40,20 +39,20 @@ var config = configT{
 
 type configT struct {
 	Dir        *dirPkg.Rule
-	Pkg        *name.Rule
+	Pkg        *pkgPkg.Rule
 	File       *filePkg.Rule
 	TestFile   *filePkg.Rule
 	Func       *funcPkg.Rule
 	FuncInTest *funcPkg.Rule `yaml:"funcInTest"`
 	Struct     *structPkg.Rule
 
-	Const      *name.Rule
-	LocalConst *name.Rule `yaml:"localConst"`
-	Var        *name.Rule
-	LocalVar   *name.Rule `yaml:"localVar"`
-	Type       *name.Rule
-	LocalType  *name.Rule `yaml:"localType"`
-	Label      *name.Rule
+	Const      *constPkg.Rule
+	LocalConst *constPkg.Rule `yaml:"localConst"`
+	Var        *varPkg.Rule
+	LocalVar   *varPkg.Rule `yaml:"localVar"`
+	Type       *typePkg.Rule
+	LocalType  *typePkg.Rule `yaml:"localType"`
+	Label      *labelPkg.Rule
 }
 
 // load config for rules

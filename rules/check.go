@@ -22,12 +22,12 @@ import (
 func Check(dir string, files []string) {
 	dirPkg.Check(dir)
 
-	pkgCheker := pkgPkg.NewCheker()
+	pkgChecker := pkgPkg.NewChecker()
 	for _, path := range files {
 		isTest := strings.HasSuffix(path, "_test.go")
 		w := walker.New(path)
 
-		pkgCheker.Check(w.AstFile.Name, w.FileSet)
+		pkgChecker.Check(w.AstFile.Name, w.FileSet)
 		filePkg.Check(isTest, path, w.SrcFile, w.AstFile, w.FileSet)
 
 		w.Walk(func(isLocal bool, node ast.Node) {

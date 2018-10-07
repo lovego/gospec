@@ -50,7 +50,7 @@ funcInTest:
     maxResults: 3     # max number of results of a function
     maxStatements: 30 # max number of statements of a function body
 struct:
-  name:
+  fieldName:
     maxLen: 30
     style: camelCase
   size:
