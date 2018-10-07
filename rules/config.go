@@ -8,26 +8,27 @@ import (
 	"gopkg.in/yaml.v2"
 
 	dirPkg "github.com/lovego/gospec/rules/objects/dir"
+	pkgPkg "github.com/lovego/gospec/rules/objects/names/pkg"
+
 	filePkg "github.com/lovego/gospec/rules/objects/file"
 	funcPkg "github.com/lovego/gospec/rules/objects/func"
 	structPkg "github.com/lovego/gospec/rules/objects/struct"
 
 	constPkg "github.com/lovego/gospec/rules/objects/names/const"
 	labelPkg "github.com/lovego/gospec/rules/objects/names/label"
-	pkgPkg "github.com/lovego/gospec/rules/objects/names/pkg"
 	typePkg "github.com/lovego/gospec/rules/objects/names/type"
 	varPkg "github.com/lovego/gospec/rules/objects/names/var"
 )
 
 var config = configT{
 	Dir:        &dirPkg.Dir,
+	Pkg:        &pkgPkg.Pkg,
 	File:       &filePkg.File,
 	TestFile:   &filePkg.TestFile,
 	Func:       &funcPkg.Func,
 	FuncInTest: &funcPkg.FuncInTest,
 	Struct:     &structPkg.Struct,
 
-	Pkg:        &pkgPkg.Pkg,
 	Const:      &constPkg.Const,
 	LocalConst: &constPkg.LocalConst,
 	Var:        &varPkg.Var,
@@ -80,10 +81,7 @@ func getConfigPath() string {
 			return p
 		}
 	}
-	if p := testConfig(dir); p != `` {
-		return p
-	}
-	return ``
+	return testConfig(dir)
 }
 
 func testConfig(dir string) string {

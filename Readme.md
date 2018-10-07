@@ -30,5 +30,5 @@ MacBook:~/go/src/my_project$ gospec models/...
 ## Configuration
 gospec find the config file named ".gospec.yml" from current working directory upwards. It use the first one it find.
 
-If no one is found, it uses the <a href="gospec.yml">default configuration</a>.
+If no one is found, it uses the <a href=".gospec.yml">default configuration</a>.
 

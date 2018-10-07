@@ -64,7 +64,3 @@ func (r Rule) checkStyle(name string) bool {
 		panic(fmt.Sprintf(`unknown style config: "%s".`, r.Style))
 	}
 }
-
-func (r Rule) valid() bool {
-	return r.Style != ""
-}
