@@ -13,6 +13,7 @@ func ExampleConfig_default() {
 		return
 	}
 	fmt.Println(string(out))
+
 	// Output:
 	// dir:
 	//   name:
@@ -80,5 +81,4 @@ func ExampleConfig_default() {
 	// label:
 	//   maxLen: 30
 	//   style: lowerCamelCase
-
 }

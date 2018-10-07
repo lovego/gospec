@@ -3,7 +3,8 @@ package main
 import (
 	"flag"
 	"os"
-	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/lovego/gospec/problems"
 	"github.com/lovego/gospec/rules"
@@ -11,11 +12,11 @@ import (
 
 func main() {
 	traDirs, dirs, files := processArgs()
-	for _, d := range traDirs {
-		traverseDir(d)
+	for _, dir := range traDirs {
+		traverseDir(dir)
 	}
-	for _, d := range dirs {
-		checkDir(d)
+	for _, dir := range dirs {
+		checkDir(dir)
 	}
 	if len(files) > 0 {
 		checkFiles(files)
@@ -27,8 +28,8 @@ func main() {
 	}
 }
 
-func traverseDir(p string) {
-	f, err := os.Open(p)
+func traverseDir(dir string) {
+	f, err := os.Open(dir)
 	if err != nil {
 		panic(err)
 	}
@@ -38,10 +39,10 @@ func traverseDir(p string) {
 	}
 	for _, d := range list {
 		if d.IsDir() && d.Name()[0] != '.' {
-			traverseDir(path.Join(p, d.Name()))
+			traverseDir(filepath.Join(dir, d.Name()))
 		}
 	}
-	checkDir(p)
+	checkDir(dir)
 }
 
 func checkDir(dir string) {
@@ -56,7 +57,7 @@ func checkDir(dir string) {
 	files := make([]string, 0, len(names))
 	for _, name := range names {
 		if willBuild(name) {
-			files = append(files, path.Join(dir, name))
+			files = append(files, filepath.Join(dir, name))
 		}
 	}
 	if len(files) > 0 {
@@ -67,7 +68,7 @@ func checkDir(dir string) {
 func checkFiles(paths []string) {
 	dirs := make(map[string][]string)
 	for _, p := range paths {
-		dir := path.Dir(p)
+		dir := filepath.Dir(p)
 		dirs[dir] = append(dirs[dir], p)
 	}
 	for dir, files := range dirs {
@@ -76,29 +77,34 @@ func checkFiles(paths []string) {
 }
 
 func processArgs() (traDirs, dirs, files []string) {
-	for _, p := range flag.Args() {
-		switch mode := fileMode(p); {
+	for _, path := range flag.Args() {
+		traverse := strings.HasSuffix(path, "/...")
+		if traverse {
+			path = strings.TrimSuffix(path, "/...")
+		}
+
+		switch mode := fileMode(path); {
 		case mode.IsDir():
-			if p[len(p)-1] == '/' {
-				traDirs = append(traDirs, path.Clean(p))
+			if traverse {
+				traDirs = append(traDirs, filepath.Clean(path))
 			} else {
-				dirs = append(dirs, path.Clean(p))
+				dirs = append(dirs, filepath.Clean(path))
 			}
 		case mode.IsRegular():
-			if willBuild(p) {
-				files = append(files, path.Clean(p))
+			if willBuild(path) {
+				files = append(files, filepath.Clean(path))
 			}
 		}
 	}
 	return
 }
 
-func willBuild(p string) bool {
-	return path.Ext(p) == `.go` && path.Base(p)[0] != '.' && p[0] != '_'
+func willBuild(name string) bool {
+	return filepath.Ext(name) == `.go` && filepath.Base(name)[0] != '.' && name[0] != '_'
 }
 
-func fileMode(p string) os.FileMode {
-	if fi, err := os.Stat(p); err == nil {
+func fileMode(path string) os.FileMode {
+	if fi, err := os.Stat(path); err == nil {
 		return fi.Mode()
 	} else {
 		panic(err)
