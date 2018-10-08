@@ -14,7 +14,6 @@ var table = newTable()
 
 func init() {
 	flag.UintVar(&limit, `limit`, 0, `limit the max problems to check.`)
-	flag.Parse()
 }
 
 func Add(position token.Position, desc, rule string) {

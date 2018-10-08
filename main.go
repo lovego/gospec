@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,7 +12,8 @@ import (
 )
 
 func main() {
-	traDirs, dirs, files := processArgs()
+	processArgs()
+	traDirs, dirs, files := getTargets()
 	rules.LoadConfig()
 	for _, dir := range traDirs {
 		traverseDir(dir)
@@ -77,7 +79,21 @@ func checkFiles(paths []string) {
 	}
 }
 
-func processArgs() (traDirs, dirs, files []string) {
+func processArgs() {
+	var version bool
+	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
+	flag.Parse()
+	if version {
+		fmt.Println("gospec version 0.0.1")
+		os.Exit(0)
+	}
+}
+
+func getTargets() (traDirs, dirs, files []string) {
+	if len(flag.Args()) == 0 {
+		dirs = []string{"."}
+		return
+	}
 	for _, path := range flag.Args() {
 		traverse := strings.HasSuffix(path, "/...")
 		if traverse {
