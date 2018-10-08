@@ -24,15 +24,17 @@ file:
     maxLen: 20
     style: lower_case
   size:
-    maxLines: 300     # max number of lines in a file
-    maxLineWidth: 100 # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
+    maxLines: 300            # max number of lines in a file
+    maxLineWidth: 100        # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
+    maxCommentLineWidth: 120 # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
 testfile:
   name:
     maxLen: 50
     style: lower_case
   size:
-    maxLines: 600     # max number of lines in a file
-    maxLineWidth: 100 # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
+    maxLines: 600            # max number of lines in a file
+    maxLineWidth: 100        # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
+    maxCommentLineWidth: 120 # max width(calculated by "github.com/mattn/go-runewidth" package) of a line.
 func:
   name:
     maxLen: 30
