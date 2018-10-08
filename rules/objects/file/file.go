@@ -10,13 +10,13 @@ import (
 var File = Rule{
 	key:  "file",
 	Name: namepkg.Rule{MaxLen: 20, Style: "lower_case"},
-	Size: sizeRule{MaxLineWidth: 100, MaxLines: 300},
+	Size: sizeRule{MaxLineWidth: 100, MaxCommentLineWidth: 120, MaxLines: 300},
 }
 
 var TestFile = Rule{
 	key:  "testFile",
 	Name: namepkg.Rule{MaxLen: 50, Style: "lower_case"},
-	Size: sizeRule{MaxLineWidth: 100, MaxLines: 600},
+	Size: sizeRule{MaxLineWidth: 100, MaxCommentLineWidth: 120, MaxLines: 600},
 }
 
 func Check(isTest bool, path, src string, astFile *ast.File, fileSet *token.FileSet) {

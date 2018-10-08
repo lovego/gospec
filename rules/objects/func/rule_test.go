@@ -20,6 +20,7 @@ var f = func(a, b int, c bool) {
 type I1 interface {
   M1()
   M2()(a int, b bool)
+  I2
 }
 
 type I2 interface{}

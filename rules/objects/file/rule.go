@@ -17,7 +17,7 @@ type Rule struct {
 
 func (r *Rule) Check(path, src string, astFile *ast.File, fileSet *token.FileSet) {
 	r.checkName(path)
-	r.Size.check(src, path, r.key+".size", astFile, fileSet)
+	r.Size.check(src, astFile, fileSet, path, r.key+".size")
 }
 
 func (r *Rule) checkName(path string) {

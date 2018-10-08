@@ -55,6 +55,8 @@ func (r *Rule) checkInterface(ifc *ast.InterfaceType, fileSet *token.FileSet) {
 		if len(f.Names) > 0 {
 			thing += " " + f.Names[0].Name
 		}
-		r.Size.checkType(f.Type.(*ast.FuncType), thing, r.key+".size", fileSet)
+		if typ, ok := f.Type.(*ast.FuncType); ok {
+			r.Size.checkType(typ, thing, r.key+".size", fileSet)
+		}
 	}
 }
