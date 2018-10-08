@@ -79,16 +79,6 @@ func checkFiles(paths []string) {
 	}
 }
 
-func processArgs() {
-	var version bool
-	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
-	flag.Parse()
-	if version {
-		fmt.Println("gospec version 0.0.1")
-		os.Exit(0)
-	}
-}
-
 func getTargets() (traDirs, dirs, files []string) {
 	if len(flag.Args()) == 0 {
 		dirs = []string{"."}
@@ -125,5 +115,15 @@ func fileMode(path string) os.FileMode {
 		return fi.Mode()
 	} else {
 		panic(err)
+	}
+}
+
+func processArgs() {
+	var version bool
+	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
+	flag.Parse()
+	if version {
+		fmt.Println("gospec version 0.0.2")
+		os.Exit(0)
 	}
 }

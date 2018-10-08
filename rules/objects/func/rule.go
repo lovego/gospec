@@ -24,10 +24,14 @@ func (r *Rule) Check(node ast.Node, fileSet *token.FileSet) {
 		r.checkName(n, fileSet)
 		thing := "func " + n.Name.Name
 		r.Size.checkType(n.Type, thing, r.key+".size", fileSet)
-		r.Size.checkBody(n.Body, thing, r.key+".size", fileSet)
+		if n.Body != nil {
+			r.Size.checkBody(n.Body, thing, r.key+".size", fileSet)
+		}
 	case *ast.FuncLit:
 		r.Size.checkType(n.Type, "literal func", r.key+".size", fileSet)
-		r.Size.checkBody(n.Body, "literal func", r.key+".size", fileSet)
+		if n.Body != nil {
+			r.Size.checkBody(n.Body, "literal func", r.key+".size", fileSet)
+		}
 	case *ast.InterfaceType:
 		r.checkInterface(n, fileSet)
 	}
