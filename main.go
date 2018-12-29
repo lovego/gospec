@@ -63,9 +63,7 @@ func checkDir(dir string) {
 			files = append(files, filepath.Join(dir, name))
 		}
 	}
-	if len(files) > 0 {
-		rules.Check(dir, files)
-	}
+	rules.Check(dir, files)
 }
 
 func checkFiles(paths []string) {
@@ -123,7 +121,7 @@ func processArgs() {
 	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
 	flag.Parse()
 	if version {
-		fmt.Println("gospec version 0.0.2")
+		fmt.Println("gospec version 18.12.29")
 		os.Exit(0)
 	}
 }
