@@ -9,7 +9,7 @@ import (
 
 var File = Rule{
 	key:  "file",
-	Name: namepkg.Rule{MaxLen: 20, Style: "lower_case"},
+	Name: namepkg.Rule{MaxLen: 30, Style: "lower_case"},
 	Size: sizeRule{MaxLineWidth: 100, MaxCommentLineWidth: 120, MaxLines: 300},
 }
 

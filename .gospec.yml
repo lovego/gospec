@@ -12,16 +12,16 @@
 
 dir:
   name:
-    maxLen: 20
+    maxLen: 30
     style: lower_case
   size:
     maxEntries: 20  # max number of entries in a dir
 pkg:
-  maxLen: 20
+  maxLen: 30
   style: lower_case
 file:
   name:
-    maxLen: 20
+    maxLen: 30
     style: lower_case
   size:
     maxLines: 300            # max number of lines in a file
@@ -58,10 +58,10 @@ struct:
   size:
     maxFields: 100   # max number of fields of a struct
 const:
-  maxLen: 30
+  maxLen: 40
   style: camelCase
 localConst:
-  maxLen: 20
+  maxLen: 30
   style: lowerCamelCase
 var:
   maxLen: 40
@@ -70,10 +70,10 @@ localVar:
   maxLen: 30
   style: lowerCamelCase
 type:
-  maxLen: 30
+  maxLen: 40
   style: camelCase
 localType:
-  maxLen: 20
+  maxLen: 30
   style: lowerCamelCase
 label:
   maxLen: 30

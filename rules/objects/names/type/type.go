@@ -11,7 +11,7 @@ var Type = Rule{
 	thing: "type",
 	key:   "type",
 	Rule: name.Rule{
-		MaxLen: 30,
+		MaxLen: 40,
 		Style:  "camelCase",
 	},
 }
@@ -20,7 +20,7 @@ var LocalType = Rule{
 	thing: "local type",
 	key:   "localType",
 	Rule: name.Rule{
-		MaxLen: 20,
+		MaxLen: 30,
 		Style:  "lowerCamelCase",
 	},
 }

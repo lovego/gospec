@@ -6,7 +6,7 @@ import (
 
 var Dir = Rule{
 	key:  "dir",
-	Name: namepkg.Rule{MaxLen: 20, Style: "lower_case"},
+	Name: namepkg.Rule{MaxLen: 30, Style: "lower_case"},
 	Size: sizeRule{MaxEntries: 20},
 }
 

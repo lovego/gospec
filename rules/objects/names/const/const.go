@@ -11,7 +11,7 @@ var Const = Rule{
 	thing: "const",
 	key:   "const",
 	Rule: namepkg.Rule{
-		MaxLen: 30,
+		MaxLen: 40,
 		Style:  "camelCase",
 	},
 }
@@ -20,7 +20,7 @@ var LocalConst = Rule{
 	thing: "local const",
 	key:   "localConst",
 	Rule: namepkg.Rule{
-		MaxLen: 20,
+		MaxLen: 30,
 		Style:  "lowerCamelCase",
 	},
 }

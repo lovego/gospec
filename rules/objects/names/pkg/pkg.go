@@ -11,7 +11,7 @@ var Pkg = Rule{
 	thing: "package",
 	key:   "pkg",
 	Rule: name.Rule{
-		MaxLen: 20,
+		MaxLen: 30,
 		Style:  "lower_case",
 	},
 }
