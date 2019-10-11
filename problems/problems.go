@@ -13,7 +13,7 @@ var count, limit uint
 var table = newTable()
 
 func init() {
-	flag.UintVar(&limit, `limit`, 0, `limit the max problems to check.`)
+	flag.UintVar(&limit, `limit`, 100, `limit the max problems to check.`)
 }
 
 func Add(position token.Position, desc, rule string) {
