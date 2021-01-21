@@ -10,7 +10,7 @@ import (
 	namepkg "github.com/lovego/gospec/rules/name"
 )
 
-var exampleTestCase = regexp.MustCompile(`^Example[_A-Z]`)
+var testCase = regexp.MustCompile(`^(Example|Test)[_A-Z]`)
 
 type Rule struct {
 	key  string
@@ -39,7 +39,7 @@ func (r *Rule) Check(node ast.Node, fileSet *token.FileSet) {
 
 func (r *Rule) checkName(fun *ast.FuncDecl, fileSet *token.FileSet) {
 	name := fun.Name.Name
-	if fun.Recv == nil && r.key == "funcInTest" && exampleTestCase.MatchString(name) {
+	if fun.Recv == nil && r.key == "funcInTest" && testCase.MatchString(name) {
 		if uint(len(name)) > r.Name.MaxLen {
 			problems.Add(fileSet.Position(fun.Name.Pos()), fmt.Sprintf(
 				"func name %s %d chars long, limit: %d", name, len(name), r.Name.MaxLen,
