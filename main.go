@@ -40,6 +40,9 @@ func traverseDir(dir string) {
 	if err != nil {
 		panic(err)
 	}
+	if err := f.Close(); err != nil {
+		panic(err)
+	}
 	for _, d := range list {
 		if d.IsDir() && (d.Name()[0] != '.' && d.Name()[0] != '_') {
 			traverseDir(filepath.Join(dir, d.Name()))
@@ -55,6 +58,9 @@ func checkDir(dir string) {
 	}
 	names, err := f.Readdirnames(-1)
 	if err != nil {
+		panic(err)
+	}
+	if err := f.Close(); err != nil {
 		panic(err)
 	}
 	files := make([]string, 0, len(names))
@@ -121,7 +127,7 @@ func processArgs() {
 	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
 	flag.Parse()
 	if version {
-		fmt.Println("gospec version 21.1.25")
+		fmt.Println("gospec version 21.2.19")
 		os.Exit(0)
 	}
 }
