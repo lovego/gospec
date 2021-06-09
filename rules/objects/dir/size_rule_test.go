@@ -15,7 +15,7 @@ func ExampleSizeRule_check() {
 	// +----------+---------------------------------+---------------------+
 	// | position |             problem             |        rule         |
 	// +----------+---------------------------------+---------------------+
-	// |        . | dir . size: 5 entries, limit: 3 | dir.size.maxEntries |
+	// | .        | dir . size: 5 entries, limit: 3 | dir.size.maxEntries |
 	// +----------+---------------------------------+---------------------+
 }
 
