@@ -127,7 +127,7 @@ func processArgs() {
 	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
 	flag.Parse()
 	if version {
-		fmt.Println("gospec version v1.0.0 20210219")
+		fmt.Println("gospec version v1.0.3 20240619")
 		os.Exit(0)
 	}
 }
