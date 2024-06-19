@@ -13,6 +13,7 @@ var lowercaseUnderscore = regexp.MustCompile(`^(_?[a-z0-9]+)+$`)
 var lowercaseDash = regexp.MustCompile(`^(-?[a-z0-9]+)+$`)
 var camelcase = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 var lowerCamelCase = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
+var lowerCamelCaseEx = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
 
 type Rule struct {
 	MaxLen uint   `yaml:"maxLen"` // max length of a name
@@ -53,6 +54,8 @@ func (r Rule) checkStyle(name string) bool {
 	}
 	switch r.Style {
 	case `lower_case`:
+		return lowercaseUnderscore.MatchString(name)
+	case `lower_case.`:
 		return lowercaseUnderscore.MatchString(name)
 	case `lower-case`:
 		return lowercaseDash.MatchString(name)

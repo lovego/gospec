@@ -89,8 +89,9 @@ func testConfig(dir string) string {
 	if _, err := os.Stat(p); err == nil {
 		return p
 	} else if os.IsNotExist(err) {
-		return ``
+		os.Exit(0)
 	} else {
 		panic(err)
 	}
+	return ""
 }
