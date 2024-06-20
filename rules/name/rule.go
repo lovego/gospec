@@ -52,7 +52,7 @@ func (r Rule) checkStyle(name string) bool {
 		return true
 	}
 	switch r.Style {
-	case `lower_case.`:
+	case `lower_case`:
 		return lowercaseUnderscore.MatchString(name)
 	case `lower-case`:
 		return lowercaseDash.MatchString(name)
