@@ -39,6 +39,7 @@ var config = configT{
 }
 
 type configT struct {
+	Targets    []string
 	Dir        *dirPkg.Rule
 	Pkg        *pkgPkg.Rule
 	File       *filePkg.Rule
@@ -69,6 +70,11 @@ func LoadConfig() {
 	if err := yaml.Unmarshal(content, &config); err != nil {
 		panic(err)
 	}
+}
+
+// specified dirs to run gospec
+func Targets() []string {
+	return config.Targets
 }
 
 func getConfigPath() string {

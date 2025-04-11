@@ -13,8 +13,8 @@ import (
 
 func main() {
 	processArgs()
-	traDirs, dirs, files := getTargets()
 	rules.LoadConfig()
+	traDirs, dirs, files := getTargets()
 	for _, dir := range traDirs {
 		traverseDir(dir)
 	}
@@ -84,11 +84,15 @@ func checkFiles(paths []string) {
 }
 
 func getTargets() (traDirs, dirs, files []string) {
-	if len(flag.Args()) == 0 {
+	args := flag.Args()
+	if rules.Targets() != nil {
+		args = rules.Targets()
+	}
+	if len(args) == 0 {
 		dirs = []string{"."}
 		return
 	}
-	for _, path := range flag.Args() {
+	for _, path := range args {
 		traverse := strings.HasSuffix(path, "/...")
 		if traverse {
 			path = strings.TrimSuffix(path, "/...")
