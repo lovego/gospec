@@ -5,7 +5,7 @@ import (
 	"github.com/lovego/gospec/rules/walker"
 )
 
-func ExampleSizeRule_check() {
+func Example_sizeRuleCheck() {
 	problems.Clear()
 	w := walker.Parse("example.go", `package example
 var a = 3

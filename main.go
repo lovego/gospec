@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lovego/gospec/gitignore"
 	"github.com/lovego/gospec/problems"
 	"github.com/lovego/gospec/rules"
 )
@@ -19,7 +20,7 @@ func main() {
 		traverseDir(dir)
 	}
 	for _, dir := range dirs {
-		checkDir(dir)
+		checkDir(dir, gitignore.New(dir))
 	}
 	if len(files) > 0 {
 		checkFiles(files)
@@ -32,6 +33,14 @@ func main() {
 }
 
 func traverseDir(dir string) {
+	ig := gitignore.New(dir)
+	if ig.Ignored(dir, true) {
+		return
+	}
+	walkDir(dir, ig)
+}
+
+func walkDir(dir string, ig *gitignore.Set) {
 	f, err := os.Open(dir)
 	if err != nil {
 		panic(err)
@@ -44,14 +53,22 @@ func traverseDir(dir string) {
 		panic(err)
 	}
 	for _, d := range list {
-		if d.IsDir() && (d.Name()[0] != '.' && d.Name()[0] != '_') {
-			traverseDir(filepath.Join(dir, d.Name()))
+		name := d.Name()
+		if d.IsDir() && name[0] != '.' && name[0] != '_' {
+			child := filepath.Join(dir, name)
+			if ig.Ignored(child, true) {
+				continue
+			}
+			walkDir(child, ig.Enter(child))
 		}
 	}
-	checkDir(dir)
+	checkDir(dir, ig)
 }
 
-func checkDir(dir string) {
+func checkDir(dir string, ig *gitignore.Set) {
+	if ig.Ignored(dir, true) {
+		return
+	}
 	f, err := os.Open(dir)
 	if err != nil {
 		panic(err)
@@ -65,8 +82,9 @@ func checkDir(dir string) {
 	}
 	files := make([]string, 0, len(names))
 	for _, name := range names {
-		if willBuild(name) {
-			files = append(files, filepath.Join(dir, name))
+		path := filepath.Join(dir, name)
+		if willBuild(name) && !ig.Ignored(path, false) {
+			files = append(files, path)
 		}
 	}
 	rules.Check(dir, files)
@@ -106,8 +124,9 @@ func getTargets() (traDirs, dirs, files []string) {
 				dirs = append(dirs, filepath.Clean(path))
 			}
 		case mode.IsRegular():
-			if willBuild(filepath.Base(path)) {
-				files = append(files, filepath.Clean(path))
+			path = filepath.Clean(path)
+			if willBuild(filepath.Base(path)) && !ignoredFile(path) {
+				files = append(files, path)
 			}
 		}
 	}
@@ -116,6 +135,10 @@ func getTargets() (traDirs, dirs, files []string) {
 
 func willBuild(name string) bool {
 	return filepath.Ext(name) == `.go` && name[0] != '.' && name[0] != '_'
+}
+
+func ignoredFile(path string) bool {
+	return gitignore.New(filepath.Dir(path)).Ignored(path, false)
 }
 
 func fileMode(path string) os.FileMode {
@@ -131,7 +154,7 @@ func processArgs() {
 	flag.BoolVar(&version, `version`, false, `display gopsec version.`)
 	flag.Parse()
 	if version {
-		fmt.Println("gospec version v1.0.0 20210219")
+		fmt.Println("gospec version v1.0.1 20261110")
 		os.Exit(0)
 	}
 }

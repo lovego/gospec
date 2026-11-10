@@ -6,7 +6,7 @@ import (
 	"github.com/lovego/gospec/problems"
 )
 
-func ExampleSizeRule_check() {
+func Example_sizeRuleCheck() {
 	problems.Clear()
 	sizeRule{MaxEntries: 3}.check(".", "dir.size")
 	problems.Render()
@@ -19,7 +19,7 @@ func ExampleSizeRule_check() {
 	// +----------+---------------------------------+---------------------+
 }
 
-func ExampleEntriesCount() {
+func Example_entriesCount() {
 	fmt.Println(entriesCount("."))
 	// Output: 5
 }

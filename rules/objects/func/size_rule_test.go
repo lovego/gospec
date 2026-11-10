@@ -7,7 +7,7 @@ import (
 	"github.com/lovego/gospec/rules/walker"
 )
 
-func ExampleSizeRule_checkType() {
+func Example_checkType() {
 	var src = `package example
 func F(a, b int, c bool) (a int, b bool) {
 }
@@ -31,7 +31,7 @@ func F(a, b int, c bool) (a int, b bool) {
 
 }
 
-func ExampleSizeRule_checkBody() {
+func Example_checkBody() {
 	var src = `package example
 func F() {
   type  t  int64  // 1

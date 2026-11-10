@@ -7,7 +7,7 @@ import (
 	"github.com/lovego/deep"
 )
 
-func ExampleCheckDefaultConfig() {
+func Example_checkDefaultConfig() {
 	configInCode := config
 	config = configT{}
 	LoadConfig()

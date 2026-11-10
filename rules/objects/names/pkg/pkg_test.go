@@ -5,7 +5,7 @@ import (
 	"github.com/lovego/gospec/rules/walker"
 )
 
-func ExampleCheck() {
+func ExampleChecker_Check() {
 	var src = `package Example
  `
 	problems.Clear()

@@ -9,6 +9,8 @@
 # 2. "lowerCamelCase" (camelcase letters start with a lowercase letter)
 # 3. "lower_case"     (lowercase letters concatenated with a underscore)
 # 4. "lower-case"     (lowercase letters concatenated with a dash)
+# Multiple styles are separated by commas. A name is accepted when it matches any of them.
+# e.g. "lower_case,lower-case"
 
 dir:
   name:

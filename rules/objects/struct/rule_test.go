@@ -7,7 +7,7 @@ import (
 	"github.com/lovego/gospec/rules/walker"
 )
 
-func ExampleRule_Check() {
+func ExampleRule_check() {
 	var src = `package example
 type T struct {
   Name string

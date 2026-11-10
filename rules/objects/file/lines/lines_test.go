@@ -24,7 +24,7 @@ var a=3 //
 */
 `)
 
-func ExampleLines_2() {
+func ExampleLines_more() {
 	lines := New(testWalker.SrcFile, testWalker.AstFile, testWalker.FileSet)
 
 	fmt.Println(lines.Num())

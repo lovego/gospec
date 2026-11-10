@@ -15,6 +15,8 @@ a configurable golang coding specification checker.
 - dir     means check the dir and the ".go" files in dir.
 - file    means check only the file.
 
+Paths matched by `.gitignore` are skipped. Patterns are read from the Git repository root down through each directory being scanned, including nested `.gitignore` files. Outside a repository, rules start at the directory being scanned.
+
 ### exmaple:
 ```
 MacBook:~/go/src/my_project$ gospec models/...

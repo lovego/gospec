@@ -51,7 +51,19 @@ func (r Rule) checkStyle(name string) bool {
 	if r.Style == `` {
 		return true
 	}
-	switch r.Style {
+	// A comma-separated list accepts a name that matches any one style,
+	// for example "lower_case,lower-case".
+	matched := false
+	for _, style := range strings.Split(r.Style, ",") {
+		if matchStyle(strings.TrimSpace(style), name) {
+			matched = true
+		}
+	}
+	return matched
+}
+
+func matchStyle(style, name string) bool {
+	switch style {
 	case `lower_case`:
 		return lowercaseUnderscore.MatchString(name)
 	case `lower-case`:
@@ -61,6 +73,6 @@ func (r Rule) checkStyle(name string) bool {
 	case `lowerCamelCase`:
 		return lowerCamelCase.MatchString(name)
 	default:
-		panic(fmt.Sprintf(`unknown style config: "%s".`, r.Style))
+		panic(fmt.Sprintf(`unknown style config: "%s".`, style))
 	}
 }

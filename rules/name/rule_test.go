@@ -9,7 +9,7 @@ import (
 
 var testPos = token.Position{Filename: "test.go", Line: 15, Column: 9}
 
-func ExampleRule_Empty() {
+func ExampleRule_empty() {
 	problems.Clear()
 	Rule{}.Exec(`_`, `var`, `var.name`, testPos)
 	Rule{MaxLen: 20, Style: "lower-case"}.Exec(`dir-name`, `dir`, `dir.name`, testPos)
@@ -42,7 +42,7 @@ func ExampleRule_Style() {
 	// +--------------+---------------------------------------------+----------------+
 }
 
-func ExampleRule_MaxLen_Style() {
+func ExampleRule_MaxLen_style() {
 	problems.Clear()
 	Rule{MaxLen: 7, Style: "camelCase"}.Exec(`var_name`, `var`, `var.name`, testPos)
 	problems.Render()
@@ -54,14 +54,33 @@ func ExampleRule_MaxLen_Style() {
 	// +--------------+------------------------------------------------------------------------+--------------------------+
 }
 
-func ExampleRule_UnknownStyle() {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println(err)
-		}
-	}()
+func ExampleRule_multiStyle() {
 	problems.Clear()
-	Rule{MaxLen: 20, Style: "camel-Case"}.Exec(`var_name`, `var`, `var.name`, testPos)
+	rule := Rule{MaxLen: 20, Style: "lower_case,lower-case"}
+	rule.Exec(`dir_name`, `dir`, `dir.name`, testPos)
+	rule.Exec(`dir-name`, `dir`, `dir.name`, testPos)
+	Rule{MaxLen: 20, Style: "lower_case, lower-case"}.Exec(`dirName`, `dir`, `dir.name`, testPos)
 	problems.Render()
-	// Output: unknown style config: "camel-Case".
+	// Output:
+	// +--------------+---------------------------------------------------------+----------------+
+	// |   position   |                         problem                         |      rule      |
+	// +--------------+---------------------------------------------------------+----------------+
+	// | test.go:15:9 | dir name dirName should be lower_case, lower-case style | dir.name.style |
+	// +--------------+---------------------------------------------------------+----------------+
+}
+
+func ExampleRule_unknownStyle() {
+	check := func(style string) {
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+		Rule{MaxLen: 20, Style: style}.Exec(`var_name`, `var`, `var.name`, testPos)
+	}
+	check("camel-Case")
+	check("lower_case,camel-Case")
+	// Output:
+	// unknown style config: "camel-Case".
+	// unknown style config: "camel-Case".
 }
